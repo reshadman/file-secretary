@@ -1,0 +1,33 @@
+{
+    "name": "reshadman/file-secretary",
+    "description": "Get rid of anything related to files in Laravel, This package handles all for you. Anything we mean.",
+    "type": "library",
+    "require": {
+        "laravel/framework": "5.1.*",
+        "ramsey/uuid": "^3.7",
+        "guzzlehttp/guzzle": "6.*",
+        "adrienrn/php-mimetyper": "^0.2.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "~3.1",
+        "phpunit/phpunit": "5.*",
+        "league/flysystem-rackspace": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Reshadman\\FileSecretary\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "FileSecretaryTests\\": "tests/"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Reza Shadman",
+            "email": "pcfeeler@gmail.com"
+        }
+    ]
+}
