@@ -1,6 +1,6 @@
 <?php
 
-namespace Reshadman\FileSecretary\Application;
+namespace Reshadman\FileSecretary\Infrastructure;
 
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Filesystem\FilesystemManager;
@@ -26,7 +26,7 @@ class FileSecretaryManager
      */
     public function getContextDriver($context)
     {
-        return $this->filesystemManager->disk($this->getConfig('contexts.'.$context.'.driver'));
+        return $this->filesystemManager->disk($this->getConfig('contexts.' . $context . '.driver'));
     }
 
     public function getContextStartingPath($context)
@@ -56,7 +56,7 @@ class FileSecretaryManager
 
             $path = $dir . '/' . $content;
 
-            if (!Str::startsWith($content, '.')) {
+            if ( ! Str::startsWith($content, '.')) {
 
                 if (is_file($path) && is_readable($path)) {
 
@@ -83,5 +83,23 @@ class FileSecretaryManager
     public function getContextData($context)
     {
         return $this->getConfig("contexts.{$context}");
+    }
+
+    public function getMimeForExtension($ext)
+    {
+        return app(MimeDbRepository::class)->findType($ext);
+    }
+
+    public static function normalizeExtension($ext)
+    {
+        $map = [
+            'jpeg' => 'jpg'
+        ];
+
+        if (array_key_exists($ext, $map)) {
+            return $map[$ext];
+        }
+
+        return $ext;
     }
 }

@@ -9,7 +9,7 @@ use League\Flysystem\AdapterInterface;
 use League\Flysystem\Rackspace\RackspaceAdapter;
 use Reshadman\FileSecretary\Application\Events\AfterAssetUpload;
 use Reshadman\FileSecretary\Application\Events\BeforeAssetUpload;
-use Reshadman\FileSecretary\Domain\FileSecretaryManager;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 use Reshadman\FileSecretary\Infrastructure\Rackspace\DirectoryPush;
 
 class UploadAsAssetCommand

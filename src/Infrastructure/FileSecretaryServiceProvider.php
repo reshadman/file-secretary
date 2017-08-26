@@ -4,7 +4,6 @@ namespace Reshadman\FileSecretary\Infrastructure;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
-use Reshadman\FileSecretary\Domain\FileSecretaryManager;
 
 class FileSecretaryServiceProvider extends ServiceProvider
 {
@@ -32,6 +31,10 @@ class FileSecretaryServiceProvider extends ServiceProvider
 
             return new FileSecretaryManager($config, $app['filesystem']);
 
+        });
+
+        $this->app->singleton(MimeDbRepository::class, function ($app) {
+            return new MimeDbRepository();
         });
     }
 }

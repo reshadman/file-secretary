@@ -4,7 +4,7 @@ namespace Reshadman\FileSecretary\Presentation\Http\Actions;
 
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Routing\Controller;
-use Reshadman\FileSecretary\Domain\FileSecretaryManager;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class DownloadBasicFileAction extends Controller
 {

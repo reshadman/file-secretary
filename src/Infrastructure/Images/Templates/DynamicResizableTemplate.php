@@ -192,18 +192,20 @@ class DynamicResizableTemplate extends AbstractDynamicTemplate implements Dynami
         $strip = $this->shouldStrip();
 
         if ($quality === null && !$strip) {
-            return parent::finalize($image);
+            return parent::finalize($image, $wantedFormat);
         }
+
+        $this->checkExtension($image, $wantedFormat);
 
         if ($strip && $image->getDriver() instanceof ImagickDriver) {
             $image->getCore()->stripImage();
         }
 
         if ($quality === null) {
-            return $image->encode();
+            return $image->encode($wantedFormat);
         }
 
-        return $image->encode(null, $quality);
+        return $image->encode($wantedFormat, $quality);
     }
 
     /**

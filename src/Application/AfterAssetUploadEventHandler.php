@@ -4,6 +4,7 @@ namespace Reshadman\FileSecretary\Application;
 
 use Illuminate\Support\Str;
 use Reshadman\FileSecretary\Application\Events\AfterAssetUpload;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class AfterAssetUploadEventHandler
 {

@@ -24,7 +24,7 @@ class MakeAndStoreImageResponse
     /**
      * @return AddressableRemoteFile
      */
-    public function getRemoteFile(): AddressableRemoteFile
+    public function getRemoteFile()
     {
         return $this->remoteFile;
     }
@@ -32,7 +32,7 @@ class MakeAndStoreImageResponse
     /**
      * @return MadeImageResponse
      */
-    public function getMadeImageResponse(): MadeImageResponse
+    public function getMadeImageResponse()
     {
         return $this->madeImageResponse;
     }

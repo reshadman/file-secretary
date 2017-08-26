@@ -6,7 +6,6 @@ class AddressableRemoteFile
 {
     private $context;
     private $relative;
-    private $uuid;
 
     public function __construct($contextData, $relative)
     {

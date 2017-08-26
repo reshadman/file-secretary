@@ -5,10 +5,10 @@ namespace Reshadman\FileSecretary\Application\Usecases;
 use GuzzleHttp\Client;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
-use MimeTyper\Repository\MimeDbRepository;
 use Ramsey\Uuid\Uuid;
-use Reshadman\FileSecretary\Domain\ContextTypes;
-use Reshadman\FileSecretary\Domain\FileSecretaryManager;
+use Reshadman\FileSecretary\Application\ContextTypes;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
+use Reshadman\FileSecretary\Infrastructure\MimeDbRepository;
 use Symfony\Component\HttpFoundation\File\File;
 
 class PresentedFile
@@ -56,6 +56,7 @@ class PresentedFile
         $this->payload = $payload;
         $this->originalName = $originalName;
         $this->uniqueName = Uuid::uuid4()->toString();
+        $this->uuid = array_get($payload, 'uuid', null);
         $this->resolveFile();
     }
 
@@ -254,7 +255,7 @@ class PresentedFile
     private static function getMimeDb()
     {
         if (null === self::$mimeDb) {
-            self::$mimeDb = new  MimeDbRepository();
+            self::$mimeDb = app(MimeDbRepository::class);
         }
 
         return self::$mimeDb;
@@ -313,6 +314,9 @@ class PresentedFile
         $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
 
         if ($contextData['category'] === ContextTypes::TYPE_IMAGE) {
+            if ($ext === null) {
+                throw new \InvalidArgumentException("Can not store image without extension.");
+            }
             $newPath = $uuid . '/' . $this->getImageName(static::MAIN_IMAGE_NAME . $ext);
         } elseif ($contextData['category'] === ContextTypes::TYPE_BASIC_FILE) {
             $newPath = $uuid . $ext ;

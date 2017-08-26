@@ -4,6 +4,7 @@ namespace Reshadman\FileSecretary\Infrastructure\Images;
 
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class ImageMutateRequest
 {
@@ -67,7 +68,7 @@ class ImageMutateRequest
 
     public function forExtension($extension)
     {
-        $this->extension = $extension;
+        $this->extension = FileSecretaryManager::normalizeExtension($extension);
         return $this;
     }
 

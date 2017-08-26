@@ -2,22 +2,14 @@
 
 namespace Jobinja\Services\ImageGenerator;
 
-use Intervention\Image\Image;
 use Intervention\Image\ImageManager as InterventionImageManager;
-use MimeTyper\Repository\MimeDbRepository;
+use Reshadman\FileSecretary\Infrastructure\MimeDbRepository;
 use Reshadman\FileSecretary\Infrastructure\Images\ImageMutateRequest;
 use Reshadman\FileSecretary\Infrastructure\Images\MadeImageResponse;
 use Reshadman\FileSecretary\Infrastructure\Images\TemplateManager;
 
 class FileSecretaryImageManager
 {
-    /**
-     * Available encodings
-     *
-     * @var array
-     */
-    public static $availableEncodings = ['jpg', 'png', 'tif', 'bmp', 'data-uri', 'gif'];
-
     /**
      * @var \Intervention\Image\ImageManager
      */
@@ -56,19 +48,15 @@ class FileSecretaryImageManager
 
         $image = $instance->finalize($image, $request->extension());
 
-        return new MadeImageResponse($image, $request->extension() ?: self::getExtensionForImage($image));
+        return new MadeImageResponse($image, $request->extension());
     }
 
-    /**
-     * Get mime for image
-     *
-     * @param \Intervention\Image\Image $image
-     * @return string
-     */
-    public static function getExtensionForImage(Image $image)
+    public static function extensionsAreEqual($first, $second)
     {
-        $mimeRepo = new MimeDbRepository();
+        $mimeRepo = app(MimeDbRepository::class);
+        $forFirst = $mimeRepo->findType($first);
+        $forSecond = $mimeRepo->findType($second);
 
-        return $mimeRepo->findExtension($image->mime());
+        return $forFirst === $forSecond;
     }
 }
