@@ -5,8 +5,8 @@ namespace Reshadman\FileSecretary\Infrastructure;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Reshadman\FileSecretary\Domain\PersistableFile;
-use Reshadman\FileSecretary\Domain\PersistableFileTrait;
+use Reshadman\FileSecretary\Application\PersistableFile;
+use Reshadman\FileSecretary\Application\PersistableFileTrait;
 
 /**
  * Class EloquentPersistedFile
@@ -59,16 +59,6 @@ class EloquentPersistedFile extends Model implements PersistableFile
     public function getFileableCreatedAt()
     {
         return $this['created_at'];
-    }
-
-    /**
-     * The time file has been updated.
-     *
-     * @return Carbon
-     */
-    public function getFileableUpdated()
-    {
-        return $this['updated_at'];
     }
 
     /**
@@ -170,5 +160,15 @@ class EloquentPersistedFile extends Model implements PersistableFile
         return $query->where(function (Builder $q) use($md5, $sha1) {
             return $q->where('file_hash', $md5)->where('file_ensured_hash', $sha1);
         });
+    }
+
+    /**
+     * The time file has been updated.
+     *
+     * @return Carbon
+     */
+    public function getFileableUpdatedAt()
+    {
+        return $this['updated_at'];
     }
 }
