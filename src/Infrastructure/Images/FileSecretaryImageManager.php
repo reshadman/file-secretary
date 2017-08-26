@@ -54,11 +54,9 @@ class FileSecretaryImageManager
 
         $image = $instance->makeFromImage($request->image());
 
-        $extension = static::getExtensionForImage($image);
+        $image = $instance->finalize($image, $request->extension());
 
-        $image = $instance->finalize($image);
-
-        return new MadeImageResponse($image, $extension);
+        return new MadeImageResponse($image, $request->extension() ?: self::getExtensionForImage($image));
     }
 
     /**

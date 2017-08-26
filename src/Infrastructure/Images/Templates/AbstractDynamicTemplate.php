@@ -3,6 +3,7 @@
 namespace Reshadman\FileSecretary\Infrastructure\Images\Templates;
 
 use Intervention\Image\Image;
+use MimeTyper\Repository\MimeDbRepository;
 use Reshadman\FileSecretary\Infrastructure\Images\DynamicTemplateInterface;
 
 abstract class AbstractDynamicTemplate implements DynamicTemplateInterface
@@ -31,8 +32,25 @@ abstract class AbstractDynamicTemplate implements DynamicTemplateInterface
         return $this->args;
     }
 
-    public function finalize(Image $image)
+    public function finalize(Image $image, $wantedFormat = null)
     {
         return $image->isEncoded() ? $image->getEncoded() : $image->encode();
+    }
+
+    protected function checkExtension($extension)
+    {
+        if ($extension === null) {
+            return;
+        }
+
+        $availableExtensions = $this->getArg('encodings');
+
+        if ($availableExtensions === null) {
+            return;
+        }
+
+        if (!in_array($extension, $availableExtensions)) {
+            throw new \InvalidArgumentException("Given extension is not supported.");
+        }
     }
 }

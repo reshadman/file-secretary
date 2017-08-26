@@ -1,6 +1,6 @@
 <?php
 
-namespace Reshadman\FileSecretary\Domain\Privacy;
+namespace Reshadman\FileSecretary\Application\Privacy;
 
 interface PrivacyInterface
 {

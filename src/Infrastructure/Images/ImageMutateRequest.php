@@ -14,6 +14,8 @@ class ImageMutateRequest
 
     private $template;
 
+    private $extension;
+
     /**
      * ImageMutateRequest constructor.
      * @param Image $image
@@ -41,6 +43,10 @@ class ImageMutateRequest
         return new self($image);
     }
 
+    /**
+     * @param $template
+     * @return ImageMutateRequest
+     */
     public function forTemplate($template)
     {
         $this->template = $template;
@@ -57,5 +63,16 @@ class ImageMutateRequest
     public function template()
     {
         return $this->template();
+    }
+
+    public function forExtension($extension)
+    {
+        $this->extension = $extension;
+        return $this;
+    }
+
+    public function extension()
+    {
+        return $this->extension;
     }
 }

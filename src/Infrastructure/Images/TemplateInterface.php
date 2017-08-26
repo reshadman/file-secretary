@@ -8,5 +8,5 @@ interface TemplateInterface
 {
     public function makeFromImage(Image $image);
 
-    public function finalize(Image $image);
+    public function finalize(Image $image, $wantedFormat);
 }

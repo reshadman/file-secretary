@@ -1,6 +1,6 @@
 <?php
 
-namespace Reshadman\FileSecretary\Domain;
+namespace Reshadman\FileSecretary\Application;
 
 trait PersistableFileTrait
 {

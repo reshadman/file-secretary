@@ -185,7 +185,7 @@ class DynamicResizableTemplate extends AbstractDynamicTemplate implements Dynami
         return $image;
     }
 
-    public function finalize(InterventionImage $image)
+    public function finalize(InterventionImage $image, $wantedFormat)
     {
         $quality = $this->getQuality();
 

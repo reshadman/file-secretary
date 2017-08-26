@@ -1,6 +1,6 @@
 <?php
 
-namespace Reshadman\FileSecretary\Domain;
+namespace Reshadman\FileSecretary\Application;
 
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Filesystem\FilesystemManager;
@@ -22,7 +22,7 @@ class FileSecretaryManager
 
     /**
      * @param $context
-     * @return FilesystemAdapter
+     * @return FilesystemAdapter|mixed
      */
     public function getContextDriver($context)
     {

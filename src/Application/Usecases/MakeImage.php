@@ -17,9 +17,9 @@ class MakeImage
         $this->fImageManager = $fImageManager;
     }
 
-    public function execute($imageable, $template)
+    public function execute($imageable, $template, $extension)
     {
-        $request = ImageMutateRequest::fromImageContent($imageable)->forTemplate($template);
+        $request = ImageMutateRequest::fromImageContent($imageable)->forTemplate($template)->forExtension($extension);
 
         return $this->fImageManager->mutate($request);
     }

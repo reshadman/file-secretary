@@ -21,7 +21,7 @@ class MakeAndStoreImage
 
     public function execute($context, $imageable, $template, $extension = null)
     {
-        $response = $this->makeImage->execute($imageable, $template);
+        $response = $this->makeImage->execute($imageable, $template, $extension);
 
         $storeResponse = $this->storeFile->execute(new PresentedFile(
             $context,
@@ -29,7 +29,7 @@ class MakeAndStoreImage
             PresentedFile::FILE_TYPE_CONTENT,
             null,
             [
-                'image_template_name' => $template . ($extension ? '.' . $extension : '')
+                'image_template_name' => $template . '.' . $response->extension()
            ]
         ));
 

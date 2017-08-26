@@ -3,6 +3,7 @@
 namespace Reshadman\FileSecretary\Presentation\Http\Actions;
 
 use Illuminate\Routing\Controller;
+use Reshadman\FileSecretary\Application\Usecases\MakeAndStoreImage;
 use Reshadman\FileSecretary\Application\Usecases\PresentedFile;
 use Reshadman\FileSecretary\Domain\FileSecretaryManager;
 
@@ -12,23 +13,29 @@ class DownloadImageTemplateAction extends Controller
      * @var FileSecretaryManager
      */
     private $secretaryManager;
+    /**
+     * @var MakeAndStoreImage
+     */
+    private $makeImage;
 
-    public function __construct(FileSecretaryManager $secretaryManager)
+    public function __construct(FileSecretaryManager $secretaryManager, MakeAndStoreImage $makeImage)
     {
         $this->secretaryManager = $secretaryManager;
+        $this->makeImage = $makeImage;
     }
 
     public function action($context, $siblingFolder, $fileName, $fileExtension = null)
     {
         $driver = $this->secretaryManager->getContextDriver($context);
 
-        if ($fileExtension !== null) {
-            $fileExtension = '/' . $fileExtension;
-        }
+        $fileExtension = $this->decorateFileExtension($fileExtension);
 
-        $filePath = ($fullSibling = $this->secretaryManager->getContextStartingPath($context) . '/' . $siblingFolder . '/') . $fileName . $fileExtension;
+        $filePath = (
+            $fullSibling = $this->getStartingPath($context) . '/' . $siblingFolder . '/'
+        ) . $fileName . $fileExtension;
 
         $path = $filePath;
+        $mimeType = null;
         if ( ! $driver->exists($filePath)) {
             if ($fileName === PresentedFile::MAIN_IMAGE_NAME) {
                 abort(404, "Given image not found.");
@@ -37,6 +44,7 @@ class DownloadImageTemplateAction extends Controller
                     abort(404, "There is no main image for this template.");
                 } else {
                     $image = $driver->get($fullMain);
+                    $image = $this->makeImage->execute($context, $image, $fileName, $fileExtension)->getMadeImageResponse()->image();
                     $path = $fullMain;
                 }
             }
@@ -44,7 +52,7 @@ class DownloadImageTemplateAction extends Controller
             $image = $driver->get($filePath);
         }
 
-        $mimeType = $driver->mimeType($path);
+        $mimeType = 'mimeType';
 
         $headers = [];
 
@@ -59,5 +67,26 @@ class DownloadImageTemplateAction extends Controller
         $contents = '';
 
         return response()->make($contents, 200, $headers);
+    }
+
+    /**
+     * @param $fileExtension
+     * @return string
+     */
+    protected function decorateFileExtension($fileExtension): string
+    {
+        if ($fileExtension !== null) {
+            $fileExtension = '.' . $fileExtension;
+        }
+        return $fileExtension;
+    }
+
+    /**
+     * @param $context
+     * @return array|mixed
+     */
+    protected function getStartingPath($context)
+    {
+        return $this->secretaryManager->getContextStartingPath($context);
     }
 }
