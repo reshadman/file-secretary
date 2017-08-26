@@ -3,6 +3,7 @@
 namespace Reshadman\FileSecretary\Infrastructure\Images;
 
 use Intervention\Image\Image;
+use Intervention\Image\ImageManager;
 
 class ImageMutateRequest
 {
@@ -10,6 +11,8 @@ class ImageMutateRequest
      * @var Image
      */
     private $image;
+
+    private $template;
 
     /**
      * ImageMutateRequest constructor.
@@ -26,5 +29,33 @@ class ImageMutateRequest
     public function image()
     {
         return $this->image;
+    }
+
+    public static function fromImageContent($image)
+    {
+        /** @var ImageManager $im */
+        $im = app(ImageManager::class);
+
+        $image = $im->make($image);
+
+        return new self($image);
+    }
+
+    public function forTemplate($template)
+    {
+        $this->template = $template;
+        return $this;
+    }
+
+    public function assert()
+    {
+        if ($this->template === null) {
+            throw new \InvalidArgumentException("Template not given.");
+        }
+    }
+
+    public function template()
+    {
+        return $this->template();
     }
 }

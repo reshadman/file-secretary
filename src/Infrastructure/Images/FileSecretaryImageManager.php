@@ -4,7 +4,9 @@ namespace Jobinja\Services\ImageGenerator;
 
 use Intervention\Image\Image;
 use Intervention\Image\ImageManager as InterventionImageManager;
+use MimeTyper\Repository\MimeDbRepository;
 use Reshadman\FileSecretary\Infrastructure\Images\ImageMutateRequest;
+use Reshadman\FileSecretary\Infrastructure\Images\MadeImageResponse;
 use Reshadman\FileSecretary\Infrastructure\Images\TemplateManager;
 
 class FileSecretaryImageManager
@@ -44,11 +46,19 @@ class FileSecretaryImageManager
      * Mutate the image based on the need of the given request
      *
      * @param ImageMutateRequest $request
-     * @return Image
+     * @return MadeImageResponse
      */
     public function mutate(ImageMutateRequest $request)
     {
-        return $request->image();
+        $instance = $this->templateManager->getTemplateInstance($request->template());
+
+        $image = $instance->makeFromImage($request->image());
+
+        $extension = static::getExtensionForImage($image);
+
+        $image = $instance->finalize($image);
+
+        return new MadeImageResponse($image, $extension);
     }
 
     /**
@@ -59,12 +69,8 @@ class FileSecretaryImageManager
      */
     public static function getExtensionForImage(Image $image)
     {
-        $mimeHash = [
-            'image/jpg' => 'jpg',
-            'image/jpeg' => 'jpg',
-            'image/png' => 'png'
-        ];
+        $mimeRepo = new MimeDbRepository();
 
-        return $mimeHash[$image->mime()];
+        return $mimeRepo->findExtension($image->mime());
     }
 }

@@ -33,7 +33,7 @@ interface PersistableFile
      *
      * @return Carbon
      */
-    public function getFileableUpdated();
+    public function getFileableUpdatedAt();
 
     /**
      * One of your defined contexts in the config file.

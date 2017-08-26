@@ -23,12 +23,16 @@ class PresentedFile
     private $fileContents;
     private $newPath;
     private $uuid;
+    private $payload;
 
     const FILE_TYPE_URL = 'url';
     const FILE_TYPE_CONTENT = 'content';
     const FILE_TYPE_INSTANCE = 'instance';
     const FILE_TYPE_PATH = 'path';
     const FILE_TYPE_BASE64 = 'base64';
+
+    const MAIN_IMAGE_NAME = 'main';
+
     /**
      * @var null
      */
@@ -42,12 +46,14 @@ class PresentedFile
      * @param $file
      * @param $fileType
      * @param null $originalName
+     * @param array $payload
      */
-    public function __construct($context, $file, $fileType, $originalName = null)
+    public function __construct($context, $file, $fileType, $originalName = null, array $payload = [])
     {
         $this->context = $context;
         $this->file = $file;
         $this->fileType = $fileType;
+        $this->payload = $payload;
         $this->originalName = $originalName;
         $this->uniqueName = Uuid::uuid4()->toString();
         $this->resolveFile();
@@ -307,7 +313,7 @@ class PresentedFile
         $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
 
         if ($contextData['category'] === ContextTypes::TYPE_IMAGE) {
-            $newPath = $uuid . '/' . 'main' . $ext;
+            $newPath = $uuid . '/' . $this->getImageName(static::MAIN_IMAGE_NAME . $ext);
         } elseif ($contextData['category'] === ContextTypes::TYPE_BASIC_FILE) {
             $newPath = $uuid . $ext ;
         } else {
@@ -335,6 +341,71 @@ class PresentedFile
             return $this->uuid;
         }
 
-        return $this->getSecretaryManager()->getConfig("file_name_generator")($this);
+        return $this->uuid = $this->getSecretaryManager()->getConfig("file_name_generator")($this);
+    }
+
+    public function getOriginalName($fallback = true)
+    {
+        return $this->originalName ?: ($fallback ? $this->getFileName() : null);
+    }
+
+    public function getSiblingFolder()
+    {
+        $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
+
+        if ($contextData['category'] === ContextTypes::TYPE_IMAGE) {
+            return $this->getUuid();
+        }
+
+        return null;
+    }
+
+    public function getContextFolder()
+    {
+        $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
+
+        return array_get($contextData, 'context_folder');
+    }
+
+    public function getMd5Hash()
+    {
+        return md5($this->getFileContents());
+    }
+
+    public function getSha1Hash()
+    {
+        return sha1($this->getFileContents());
+    }
+
+    public function getCategory()
+    {
+        $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
+
+        return array_get($contextData, 'category');
+    }
+
+    public function getPayload()
+    {
+        return $this->payload;
+    }
+
+    public function getPayloadByKey()
+    {
+        return array_get($this->getPayload(), 'client_ip');
+    }
+
+    /**
+     * @param $default
+     * @return string
+     */
+    protected function getImageName($default)
+    {
+        $payload = $this->getPayload();
+
+        if (!is_array($this->payload)) {
+            return $default;
+        }
+
+        return array_get($payload, 'image_template_name', $default);
     }
 }

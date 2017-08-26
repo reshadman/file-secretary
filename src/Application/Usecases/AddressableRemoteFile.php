@@ -6,6 +6,7 @@ class AddressableRemoteFile
 {
     private $context;
     private $relative;
+    private $uuid;
 
     public function __construct($contextData, $relative)
     {
@@ -33,5 +34,10 @@ class AddressableRemoteFile
         $base = trim(array_get($this->context, 'driver_base_address', ''), '/');
 
         return $base;
+    }
+
+    public function getContextName()
+    {
+        return array_get($this->context, 'name');
     }
 }

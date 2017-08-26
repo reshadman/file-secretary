@@ -3,10 +3,16 @@
 namespace Reshadman\FileSecretary\Infrastructure;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Reshadman\FileSecretary\Domain\PersistableFile;
 use Reshadman\FileSecretary\Domain\PersistableFileTrait;
 
+/**
+ * Class EloquentPersistedFile
+ * @method hashIs($md5, $sha1)
+ * @package Reshadman\FileSecretary\Infrastructure
+ */
 class EloquentPersistedFile extends Model implements PersistableFile
 {
     use PersistableFileTrait;
@@ -136,5 +142,33 @@ class EloquentPersistedFile extends Model implements PersistableFile
     public function getFileableEnsuredHash()
     {
         return $this['ensured_hash'];
+    }
+
+    /**
+     * Get category of the file
+     *
+     * @return string
+     */
+    public function getCategory()
+    {
+        return $this['category'];
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+    }
+
+    /**
+     * @param $query
+     * @param $md5
+     * @param $sha1
+     * @return Builder
+     */
+    public function scopeHashIs(Builder $query, $md5, $sha1)
+    {
+        return $query->where(function (Builder $q) use($md5, $sha1) {
+            return $q->where('file_hash', $md5)->where('file_ensured_hash', $sha1);
+        });
     }
 }

@@ -6,7 +6,8 @@
         "laravel/framework": "5.1.*",
         "ramsey/uuid": "^3.7",
         "guzzlehttp/guzzle": "6.*",
-        "adrienrn/php-mimetyper": "^0.2.0"
+        "adrienrn/php-mimetyper": "^0.2.0",
+        "intervention/image": "^2.4"
     },
     "require-dev": {
         "orchestra/testbench": "~3.1",

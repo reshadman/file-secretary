@@ -2,6 +2,7 @@
 
 namespace Reshadman\FileSecretary\Domain;
 
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Support\Str;
 
@@ -19,6 +20,10 @@ class FileSecretaryManager
         $this->filesystemManager = $filesystemManager;
     }
 
+    /**
+     * @param $context
+     * @return FilesystemAdapter
+     */
     public function getContextDriver($context)
     {
         return $this->filesystemManager->disk($this->getConfig('contexts.'.$context.'.driver'));
