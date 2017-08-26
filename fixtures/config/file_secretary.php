@@ -1,31 +1,28 @@
 <?php return [
 
-    'file_name_generator' => function (\Reshadman\FileSecretary\Application\Usecases\PresentedFile $presentedFile) {
+    'file_name_generator' => function (\Reshadman\FileSecretary\Application\PresentedFile $presentedFile) {
         // No new file is created if the same file is uploaded multiple times.
         $fileContents = $presentedFile->getFileContents();
         return crc32($fileContents) . '-' . md5($fileContents);
     },
 
-    'persistence' => [
 
-        'provider' => \Reshadman\FileSecretary\Infrastructure\EloquentPersistedFileProvider::class,
+    'eloquent' => [
 
-        'eloquent' => [
+        'model' => \Reshadman\FileSecretary\Application\EloquentPersistedFile::class,
 
-            'model' => \Reshadman\FileSecretary\Infrastructure\EloquentPersistedFile::class,
-
-            'table' => 'system__files'
-        ],
-
-        'database' => [
-
-            'table' => 'system__files'
-
-        ]
+        'table' => 'system__files'
     ],
 
     'available_image_templates' => [
-
+        'companies_logo_200x200' => [
+            'class' => \Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class,
+            'args' => ['width' => 200, 'height' => 200, 'encodings' => null],
+        ],
+        'companies_logo_201x201' => [
+            'class' => \Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class,
+            'args' => ['width' => 200, 'height' => 200, 'encodings' => ['png']],
+        ],
     ],
     
     'contexts' => [
@@ -38,9 +35,9 @@
 
             'driver_based_address' => null,
 
-            'category' => \Reshadman\FileSecretary\Domain\ContextTypes::TYPE_BASIC_FILE,
+            'category' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_BASIC_FILE,
 
-            'privacy' => \Reshadman\FileSecretary\Domain\Privacy\NotAllowedPrivacy::class
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
 
         ],
 
@@ -52,9 +49,9 @@
 
             'driver_based_address' => 'https://files.jobinja.ir/',
 
-            'category' => \Reshadman\FileSecretary\Domain\ContextTypes::TYPE_BASIC_FILE,
+            'category' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_BASIC_FILE,
 
-            'privacy' => \Reshadman\FileSecretary\Domain\Privacy\PublicPrivacy::class
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
 
         ],
 
@@ -64,24 +61,24 @@
 
             'driver_base_address' => null,
 
-            'context_folder' => \Reshadman\FileSecretary\Domain\ContextTypes::TYPE_IMAGE,
+            'context_folder' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_IMAGE,
 
             'category' => 'images',
 
-            'privacy' => \Reshadman\FileSecretary\Domain\Privacy\NotAllowedPrivacy::class
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
         ],
 
         'images_public' => [
 
             'driver' => 'public',
 
-            'context_folder' => \Reshadman\FileSecretary\Domain\ContextTypes::TYPE_IMAGE,
+            'context_folder' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_IMAGE,
 
             'driver_base_address' => 'https://images.jobinja.ir/',
 
-            'category' => \Reshadman\FileSecretary\Domain\ContextTypes::TYPE_IMAGE,
+            'category' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_IMAGE,
 
-            'privacy' => \Reshadman\FileSecretary\Domain\Privacy\PublicPrivacy::class
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
 
         ],
 
@@ -93,7 +90,7 @@
 
             'driver_base_address' => 'https://assets.jobinja.ir/',
 
-            'category' => \Reshadman\FileSecretary\Domain\ContextTypes::TYPE_ASSET,
+            'category' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_ASSET,
         ]
 
     ],

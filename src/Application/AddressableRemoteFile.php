@@ -1,6 +1,6 @@
 <?php
 
-namespace Reshadman\FileSecretary\Application\Usecases;
+namespace Reshadman\FileSecretary\Application;
 
 class AddressableRemoteFile
 {

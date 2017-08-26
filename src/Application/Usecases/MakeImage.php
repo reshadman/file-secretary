@@ -2,7 +2,7 @@
 
 namespace Reshadman\FileSecretary\Application\Usecases;
 
-use Jobinja\Services\ImageGenerator\FileSecretaryImageManager;
+use Reshadman\FileSecretary\Infrastructure\Images\FileSecretaryImageManager;
 use Reshadman\FileSecretary\Infrastructure\Images\ImageMutateRequest;
 
 class MakeImage

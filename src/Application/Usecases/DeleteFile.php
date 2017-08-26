@@ -2,8 +2,8 @@
 
 namespace Reshadman\FileSecretary\Application\Usecases;
 
-use Reshadman\FileSecretary\Domain\ContextTypes;
-use Reshadman\FileSecretary\Domain\FileSecretaryManager;
+use Reshadman\FileSecretary\Application\ContextTypes;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class DeleteFile
 {

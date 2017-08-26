@@ -2,6 +2,7 @@
 
 namespace Reshadman\FileSecretary\Application\Usecases;
 
+use Reshadman\FileSecretary\Application\PresentedFile;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class MakeAndStoreImage

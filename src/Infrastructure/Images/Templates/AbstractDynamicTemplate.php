@@ -3,7 +3,7 @@
 namespace Reshadman\FileSecretary\Infrastructure\Images\Templates;
 
 use Intervention\Image\Image;
-use Jobinja\Services\ImageGenerator\FileSecretaryImageManager;
+use Reshadman\FileSecretary\Infrastructure\Images\FileSecretaryImageManager;
 use Reshadman\FileSecretary\Infrastructure\MimeDbRepository;
 use Reshadman\FileSecretary\Infrastructure\Images\DynamicTemplateInterface;
 

@@ -63,7 +63,7 @@ class ImageMutateRequest
 
     public function template()
     {
-        return $this->template();
+        return $this->template;
     }
 
     public function forExtension($extension)

@@ -5,7 +5,7 @@ namespace Reshadman\FileSecretary\Presentation\Http\Actions;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
 use Reshadman\FileSecretary\Application\Usecases\MakeAndStoreImage;
-use Reshadman\FileSecretary\Application\Usecases\PresentedFile;
+use Reshadman\FileSecretary\Application\PresentedFile;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class DownloadImageTemplateAction extends Controller

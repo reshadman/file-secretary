@@ -1,12 +1,9 @@
 <?php
 
-namespace Jobinja\Services\ImageGenerator;
+namespace Reshadman\FileSecretary\Infrastructure\Images;
 
 use Intervention\Image\ImageManager as InterventionImageManager;
 use Reshadman\FileSecretary\Infrastructure\MimeDbRepository;
-use Reshadman\FileSecretary\Infrastructure\Images\ImageMutateRequest;
-use Reshadman\FileSecretary\Infrastructure\Images\MadeImageResponse;
-use Reshadman\FileSecretary\Infrastructure\Images\TemplateManager;
 
 class FileSecretaryImageManager
 {
@@ -53,9 +50,12 @@ class FileSecretaryImageManager
 
     public static function extensionsAreEqual($first, $second)
     {
+        $first = strtolower($first);
+        $second = strtolower($second);
+
         $mimeRepo = app(MimeDbRepository::class);
-        $forFirst = $mimeRepo->findType($first);
-        $forSecond = $mimeRepo->findType($second);
+        $forFirst = $mimeRepo->findExtension($mimeRepo->findType($first));
+        $forSecond = $mimeRepo->findExtension($mimeRepo->findType($second));
 
         return $forFirst === $forSecond;
     }

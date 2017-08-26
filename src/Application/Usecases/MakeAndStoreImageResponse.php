@@ -2,6 +2,7 @@
 
 namespace Reshadman\FileSecretary\Application\Usecases;
 
+use Reshadman\FileSecretary\Application\AddressableRemoteFile;
 use Reshadman\FileSecretary\Infrastructure\Images\MadeImageResponse;
 
 class MakeAndStoreImageResponse

@@ -4,6 +4,7 @@ namespace Reshadman\FileSecretary\Infrastructure;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
+use Reshadman\FileSecretary\Infrastructure\Images\TemplateManager;
 
 class FileSecretaryServiceProvider extends ServiceProvider
 {
@@ -33,8 +34,13 @@ class FileSecretaryServiceProvider extends ServiceProvider
 
         });
 
-        $this->app->singleton(MimeDbRepository::class, function ($app) {
+        $this->app->singleton(MimeDbRepository::class, function () {
             return new MimeDbRepository();
+        });
+
+        $this->app->singleton(TemplateManager::class, function ($app) {
+            $templates = $app['config']->get('file_secretary.available_image_templates', []);
+            return new TemplateManager($templates);
         });
     }
 }

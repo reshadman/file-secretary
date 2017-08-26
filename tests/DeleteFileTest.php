@@ -3,9 +3,9 @@
 namespace FileSecretaryTests;
 
 use Reshadman\FileSecretary\Application\Usecases\DeleteFile;
-use Reshadman\FileSecretary\Application\Usecases\PresentedFile;
+use Reshadman\FileSecretary\Application\PresentedFile;
 use Reshadman\FileSecretary\Application\Usecases\StoreFile;
-use Reshadman\FileSecretary\Domain\FileSecretaryManager;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class DeleteFileTest extends BaseTestCase
 {

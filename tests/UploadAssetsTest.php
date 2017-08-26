@@ -3,7 +3,7 @@
 namespace FileSecretaryTests;
 
 
-use Reshadman\FileSecretary\Domain\FileSecretaryManager;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class UploadAssetsTest extends BaseTestCase
 {

@@ -2,7 +2,7 @@
 
 namespace FileSecretaryTests;
 
-use Reshadman\FileSecretary\Application\Usecases\PresentedFile;
+use Reshadman\FileSecretary\Application\PresentedFile;
 use Reshadman\FileSecretary\Application\Usecases\StoreFile;
 
 class StoreFileTest extends BaseTestCase

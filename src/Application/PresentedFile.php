@@ -1,12 +1,11 @@
 <?php
 
-namespace Reshadman\FileSecretary\Application\Usecases;
+namespace Reshadman\FileSecretary\Application;
 
 use GuzzleHttp\Client;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
-use Reshadman\FileSecretary\Application\ContextTypes;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 use Reshadman\FileSecretary\Infrastructure\MimeDbRepository;
 use Symfony\Component\HttpFoundation\File\File;

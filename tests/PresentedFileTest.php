@@ -3,7 +3,7 @@
 namespace FileSecretaryTests;
 
 use Illuminate\Support\Str;
-use Reshadman\FileSecretary\Application\Usecases\PresentedFile;
+use Reshadman\FileSecretary\Application\PresentedFile;
 
 class PresentedFileTest extends BaseTestCase
 {

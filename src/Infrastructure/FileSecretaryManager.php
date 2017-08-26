@@ -2,9 +2,11 @@
 
 namespace Reshadman\FileSecretary\Infrastructure;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Support\Str;
+use Reshadman\FileSecretary\Application\PersistableFile;
 
 class FileSecretaryManager
 {
@@ -101,5 +103,23 @@ class FileSecretaryManager
         }
 
         return $ext;
+    }
+
+    /**
+     * @return Model|PersistableFile
+     */
+    public function getPersistModel()
+    {
+        $model = $this->getConfig("eloquent.model");
+
+        if ($model === null) {
+            throw new \InvalidArgumentException("Model Can not be null");
+        }
+
+        if (!$model instanceof Model || !$model instanceof PersistableFile) {
+            throw new \InvalidArgumentException("Model is not valid.");
+        }
+
+        return app($model);
     }
 }

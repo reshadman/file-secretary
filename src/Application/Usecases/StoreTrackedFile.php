@@ -2,7 +2,8 @@
 
 namespace Reshadman\FileSecretary\Application\Usecases;
 
-use Reshadman\FileSecretary\Infrastructure\EloquentPersistedFile;
+use Reshadman\FileSecretary\Application\PresentedFile;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class StoreTrackedFile
 {
@@ -10,17 +11,22 @@ class StoreTrackedFile
      * @var StoreFile
      */
     private $storeFile;
+    /**
+     * @var FileSecretaryManager
+     */
+    private $fManager;
 
-    public function __construct(StoreFile $storeFile)
+    public function __construct(StoreFile $storeFile, FileSecretaryManager $fManager)
     {
         $this->storeFile = $storeFile;
+        $this->fManager = $fManager;
     }
 
     public function execute(PresentedFile $presentedFile)
     {
         $this->storeFile->execute($presentedFile);
 
-        return EloquentPersistedFile::create([
+        return $this->fManager->getPersistModel()->create([
             'uuid' => $presentedFile->getUuid(),
             'context' => $presentedFile->getContext(),
             'original_name' => $presentedFile->getOriginalName(),

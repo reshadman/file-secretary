@@ -2,19 +2,29 @@
 
 namespace Reshadman\FileSecretary\Application\Usecases;
 
-use Reshadman\FileSecretary\Infrastructure\EloquentPersistedFile;
+use Reshadman\FileSecretary\Application\PersistableFile;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class DeleteTrackedFile
 {
-    public function __construct(DeleteFile $deleteFile)
+    /**
+     * @var FileSecretaryManager
+     */
+    private $fManager;
+
+    public function __construct(DeleteFile $deleteFile, FileSecretaryManager $fManager)
     {
         $this->deleteFile = $deleteFile;
+        $this->fManager = $fManager;
     }
 
+    /**
+     * @param string|PersistableFile $fileUuidOrInstance
+     */
     public function execute($fileUuidOrInstance)
     {
-        if (!$fileUuidOrInstance instanceof EloquentPersistedFile) {
-            $fileUuidOrInstance = EloquentPersistedFile::where('uuid', $fileUuidOrInstance)->firstOrFail();
+        if (!is_a($fileUuidOrInstance, $model = $this->fManager->getPersistModel())) {
+            $fileUuidOrInstance = $model->where('uuid', $fileUuidOrInstance)->firstOrFail();
         }
 
         $this->deleteFile->execute($fileUuidOrInstance->getFileableContext(), $fileUuidOrInstance->getFinalPath());

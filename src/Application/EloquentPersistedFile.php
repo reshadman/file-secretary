@@ -1,12 +1,10 @@
 <?php
 
-namespace Reshadman\FileSecretary\Infrastructure;
+namespace Reshadman\FileSecretary\Application;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Reshadman\FileSecretary\Application\PersistableFile;
-use Reshadman\FileSecretary\Application\PersistableFileTrait;
 
 /**
  * Class EloquentPersistedFile
