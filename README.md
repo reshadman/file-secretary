@@ -34,7 +34,7 @@ Get rid of anything related to files in Laravel, This package handles all for yo
 composer require reshadman/file-secretary 1.*
 ```
 
-### Publishing vendor (Configuration, Migrations)
+### Publish config and migrations
 To publish configuration:
 ```bash
 php artisqan vendor:publish \
