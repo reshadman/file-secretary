@@ -49,7 +49,7 @@ return [
 ];
 ``` 
 
-#### Database tracking
+#### Database tracking:
 Database tracking is only possible with eloquent models, In the next releases
 they will be eloquent independent.
 
@@ -77,10 +77,19 @@ return [
     ],
 ];
 ``` 
+### Image templates:
+The package offers a very simple way for manipulating images, we call them **Templates**. It is based on [Intervention Package](http://image.intervention.io/). 
+With a COC wrapper. You name your templates in the config file, map them to a template class, and they will be manipulated, 
+stored and served on the cloud as simple as that, you just need to follow the configuration spec.
+By default a default template is included in the package which allows:
+ - Resizing: (defined width, defined height), (defined width, auto height and vice versa you can also define the fit strategy)
+ - Encodings: Images can be encoded with the exact encoding of their parent file, or you can specify your needed encodings.
+ - Quality: You can specify the quality, too
+ - Stripping: Sometimes the ICC profiles of the images are embedded in the file. Removing
+ them can reduce the file size dramatically. You can also use this option.
 
- 
 ## Running the Integration Tests
-There are integration tests written for this package. To run integration
+ There are integration tests written for this package. To run integration
 tests do as the following:
 
  1. Create your `phpunit.xml` file based on the packages's `phpunit.dist.xml`: `cp phpunit.dist.xml phpunit.xml`
