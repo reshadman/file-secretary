@@ -17,6 +17,68 @@ Get rid of anything related to files in Laravel, This package handles all for yo
  7. **A Simple controller for serving private/public files** can be used to serve both resizable images, and basic files.
  You can implement your own access control for serving based on config.
  
+## Installation
+```
+composer require reshadman/file-secretary 1.*
+```
+
+## Configuration
+To publish configuration:
+```
+php artisqan vendor:publish --provider=Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider
+```
+
+> By default the migration for database tracking is also published, you delete it if you don't want the functionality.
+
+### Configuration data
+
+#### File name generator function:
+```php
+<?php 
+return [
+    // Other config elements...
+    'file_name_generator' => function (\Reshadman\FileSecretary\Application\PresentedFile $presentedFile) {
+        // This prevents multiple files with the same contents.
+        // And it is too rare, to have two different files with the same hash and size.
+        // You could also add an additional hash, but it will increase the filename size
+        // Which may lead to some problems in Windows systems.
+        $size = $presentedFile->getFileInstance()->getSize();
+        $hash = sha1_file($presentedFile->getFileInstance()->getPath());
+        return  $size . '-' . $hash;
+    },
+];
+``` 
+
+#### Database tracking
+Database tracking is only possible with eloquent models, In the next releases
+they will be eloquent independent.
+
+You can use the default model, with your custom table name, or you can create your own model
+and address it in the config file.
+
+Your model should implement the following interface:
+```php
+<?php
+
+\Reshadman\FileSecretary\Application\PersistableFile::class;
+
+```
+
+or you can simply extend the package's default eloquent model.
+
+```php
+<?php 
+return [
+    // Other config elements...
+    'eloquent' => [
+        'model' => \Reshadman\FileSecretary\Application\EloquentPersistedFile::class,
+
+        'table' => 'system__files'
+    ],
+];
+``` 
+
+ 
 ## Running the Integration Tests
 There are integration tests written for this package. To run integration
 tests do as the following:
