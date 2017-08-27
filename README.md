@@ -29,14 +29,14 @@ Get rid of anything related to files in Laravel, This package handles all for yo
  serve both resizable images, and basic files.
  You can implement your own access control for serving them based on config.
  
-## Installation
-```
+### Installation
+```bash
 composer require reshadman/file-secretary 1.*
 ```
 
-## Publishing vendor (Configuration, Migrations)
+### Publishing vendor (Configuration, Migrations)
 To publish configuration:
-```
+```bash
 php artisqan vendor:publish \
     --provider=Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider \
     --tag=config
@@ -44,21 +44,23 @@ php artisqan vendor:publish \
 
 > By default the migration for database tracking is also published, you delete it if you don't want the functionality.
 
-To publish migration:
-```
+To publish migrations:
+```bash
 php artisqan vendor:publish \
     --provider=Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider \
     --tag=migrations
 ```
 
 ### Configuration
-For understanding how this package works please read the commented documentation
+For understanding how this package works please read the documentation
 blocks in the default config file here:
 
 [config/file_secretary.php](https://github.com/reshadman/file-secretary/blob/master/fixtures/config/file_secretary.php)
 
 
-## Running the Integration Tests
+### Usage
+
+### Running the Integration Tests
  There are integration tests written for this package. To run integration
 tests do as the following:
 
@@ -73,16 +75,15 @@ tests do as the following:
 > Currently there is no isolated object unit testing for this package. 
 > They will be added in next releases.
 
-## Package Roadmap
+### Package Roadmap
  1. Writing more integration tests + isolated object unit tests.
  2. Use more semantic names for features, class names and methods names.
  3. Make the tracking, eloquent independent.
  4. Refactor the code both for design and performance.
 
-## About the package
+### About the package
 This package has been extracted from [*jobinja.ir - The leading job board and career platform in Iran*](https://jobinja.ir),
 This is part of the work for making [jobinja.ir](https://jobinja.ir), [12factor.net](http://12factor.net) compatible.
 
-## License
-
+### License
 The MIT License (MIT). Please see License File for more information.
