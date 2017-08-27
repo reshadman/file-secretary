@@ -137,7 +137,7 @@ $fileWithSymfonyFile = new PresentedFile(
 /** @var \Reshadman\FileSecretary\Application\AddressableRemoteFile $response */
 $response = $store->execute($fileWithPath);
 
-dd($response->fullRelative());
+dd($response->fullRelative(), $response->fullUrl());
 
 ```
 
@@ -148,6 +148,50 @@ For this feature you should:
 of the config file.
 2. Create your needed templates in the `available_image_templates` of the config file.
 
+Templates should implement the following interface:
+```php
+<?php
+\Reshadman\FileSecretary\Infrastructure\Images\TemplateInterface::class;
+```
+
+You can use the default template for most of the use cases, if you need yours
+you can see just how the following template works:
+```php
+<?php
+\Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class;
+```
+
+Storing images is not different from storing basic files you should only pass the 
+proper "context", The image will be stored in the following format:
+
+```
+context_folder/xxxx-xxxxxx-unique-folder-name-based-on-file-name-generator/main.png```
+```
+
+Manipulating happens on the fly, for instance when the following url is called:
+```
+https://jobinja.ir/file-secretary/images/company_assets/xxxxx-xxxxxxx/c_logo_200x200.png
+```
+
+The controller find the `main.png` file from the sibling folder, finds the template
+based on the requested file name and passes it to the proper template class.
+The output image is stored beside the main file. and the response is served to the user.
+
+**Serving without the participation of PHP once created:**
+
+Assume that you are using Rackspace object storage, each container has a base address.
+We will use our domain: `https://images.myapp.com` the domain is pointed
+to an nginx config which will first try to get the file from the rackspace and as a fallback
+will call our script endpoint which manipulates the image.
+With this strategy the first call will be a not found in rackspace, the second one
+will serve the file from the rackspace, you can also cache files in nginx for 
+reducing the cost.
+
+> In further releases, for files in the database(tracked files) we can store
+the name of the template that we have manipulated. So when generating
+the full url for that file we can decide to serve the rackspace file directly
+or from our application proxy, which will add the template to the database
+after the first call. So in the next calls the image is directly downloaded from Rackspace.
 
 ### Running the Integration Tests
  There are integration tests written for this package. To run integration
