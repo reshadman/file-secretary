@@ -1,9 +1,13 @@
 <?php return [
 
     'file_name_generator' => function (\Reshadman\FileSecretary\Application\PresentedFile $presentedFile) {
-        // No new file is created if the same file is uploaded multiple times.
-        $fileContents = $presentedFile->getFileContents();
-        return crc32($fileContents) . '-' . md5($fileContents);
+        // This prevents multiple files with the same contents.
+        // And it is too rare, to have two different files with the same hash and size.
+        // You could also add an additional hash, but it will increase the filename size
+        // Which may lead to some problems in Windows systems.
+        $size = $presentedFile->getFileInstance()->getSize();
+        $hash = sha1_file($presentedFile->getFileInstance()->getPath());
+        return  $size . '-' . $hash;
     },
 
 
@@ -35,7 +39,7 @@
 
             'driver_based_address' => null,
 
-            'category' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_BASIC_FILE,
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_BASIC_FILE,
 
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
 
@@ -49,7 +53,7 @@
 
             'driver_based_address' => 'https://files.jobinja.ir/',
 
-            'category' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_BASIC_FILE,
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_BASIC_FILE,
 
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
 
@@ -61,7 +65,7 @@
 
             'driver_base_address' => null,
 
-            'context_folder' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_IMAGE,
+            'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
 
             'category' => 'images',
 
@@ -72,11 +76,11 @@
 
             'driver' => 'public',
 
-            'context_folder' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_IMAGE,
+            'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
 
             'driver_base_address' => 'https://images.jobinja.ir/',
 
-            'category' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_IMAGE,
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
 
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
 
@@ -90,7 +94,7 @@
 
             'driver_base_address' => 'https://assets.jobinja.ir/',
 
-            'category' => \Reshadman\FileSecretary\Application\ContextTypes::TYPE_ASSET,
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_ASSET,
         ]
 
     ],

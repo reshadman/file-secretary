@@ -2,7 +2,7 @@
 
 namespace Reshadman\FileSecretary\Application\Usecases;
 
-use Reshadman\FileSecretary\Application\ContextTypes;
+use Reshadman\FileSecretary\Application\ContextCategoryTypes;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class DeleteFile
@@ -25,7 +25,7 @@ class DeleteFile
 
         $contextData = $this->secretaryManager->getContextData($context);
 
-        if ($contextData['category'] === ContextTypes::TYPE_IMAGE) {
+        if ($contextData['category'] === ContextCategoryTypes::TYPE_IMAGE) {
             $exploded = explode('.', $fullPath);
             array_pop($exploded);
             $exploded = explode('/', implode('', $exploded));

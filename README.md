@@ -1,31 +1,22 @@
-# Laravel File Secretary
-This package handles anything related to files, *Cached Resizable Images*, *Database tracked files*, *Static assets caching*, *Private Files*.
+## Running the Integration Tests
+There are integration tests written for this package. To run integration
+tests do as the following:
 
-## Usecases
- - **File Center**: A Simple Eloquent Model, Which allows you to track your files, If you are not interested you can ignore it.
- - **Resizble Images the right way**: Based on intervention, fully configurable. Files are generated on the fly and are cached without the participation of PHP once generated even if you use a cloud file service provider like Rackspace. You can use your own templates for generating images based on your needs or you can use the dynamic template provided by the package. 
- - **Private files**: You can have private files that are served only if the criteria is met.
- - **Versioned static assets**: Your task runner generated some static assets, but they are still served through your main app (or you have set another domain for them), but you still can't use the features of your CDN servive provider (Like Rackspace), This package allows you to upload your entire assets to your cloud CDN, they are versioned automatically and you can address them with a simple function call in your templates.
+ 1. Create your `phpunit.xml` file based on the packages's `phpunit.dist.xml`:
+ `cp phpunit.dist.xml phpunit.xml`
+ 2. Fill the phpunit config with your environment variables.
+ The package has been tested with **Rackspace** Object storage, to prove the 
+ functionality in cloud. You can change the `phpunit.xml` file and the configs in `fixtures/config/`
+ to integrate them with your testing environment.
+ 3. Run the tests with `vendor/bin/phpunit --debug`
+ 
+> Currently there is no isolated object unit testing for this package. 
+> They will be added in next releases.
 
-## Adding Contexts
+## About the package
+This package has been extracted from [*jobinja.ir* - The leading job board and career platform in Iran](https://jobinja.ir),
+This is part of the work for making [jobinja.ir](https://jobinja.ir), [12factor.net](http://12factor.net) compatible.
 
-**Context have following attributes:**
+## License
 
- - Context name: Which is appeared in database.
- - Context disk driver: Which is used to manage the file. 
- - Context privacy: Which gets a callback class on file request. You can write your own callback handlers.
- If the privacy check is not successful the file
- would not be downloaded. Otherwise it will be downloaded.
- - Context path: Which maps the context name to the prepend of the files, allows to easily use same
- drivers for multiple contexts.
- - Driver base address: When set, Instead of your sites generated url, this url will prepended to the
- address.
- - Context Category: Which has tree type: (`basic_file`, `image`, `asset`).
- 
- 
- > A not on images: If you set the driver_based address for the file, it is used for
- generated template images too, to disable this you can set the `ignore_base_address_for_templates` to the context.
- 
- > If a context is private but a base_address is set, it will use the base_address and no checks will be applied.
- 
- 
+The MIT License (MIT). Please see License File for more information.

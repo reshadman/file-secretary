@@ -312,12 +312,12 @@ class PresentedFile
 
         $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
 
-        if ($contextData['category'] === ContextTypes::TYPE_IMAGE) {
+        if ($contextData['category'] === ContextCategoryTypes::TYPE_IMAGE) {
             if ($ext === null) {
                 throw new \InvalidArgumentException("Can not store image without extension.");
             }
             $newPath = $uuid . '/' . $this->getImageName(static::MAIN_IMAGE_NAME . $ext);
-        } elseif ($contextData['category'] === ContextTypes::TYPE_BASIC_FILE) {
+        } elseif ($contextData['category'] === ContextCategoryTypes::TYPE_BASIC_FILE) {
             $newPath = $uuid . $ext ;
         } else {
             throw new \ErrorException("Context category is not supported.");
@@ -356,7 +356,7 @@ class PresentedFile
     {
         $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
 
-        if ($contextData['category'] === ContextTypes::TYPE_IMAGE) {
+        if ($contextData['category'] === ContextCategoryTypes::TYPE_IMAGE) {
             return $this->getUuid();
         }
 
