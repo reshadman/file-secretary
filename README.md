@@ -66,6 +66,80 @@ The best way to see the usage is by reading the integration tests.
 php artisan file-secretary:upload-assets --tags=asset_1,asset_2
 ```
 
+### 2. Storing Basic And Image Files
+For this feature you should:
+1. Create a context of type `"basic_file"` in the contexts section
+
+To Store a file you should create an instance of:
+
+```
+Reshadman\FileSecretary\Application\PresentedFile
+```
+
+and pass it to the ```StoreFile``` command.
+See the example below:
+```php
+<?php
+
+use Reshadman\FileSecretary\Application\PresentedFile;
+use Reshadman\FileSecretary\Application\Usecases\StoreFile;
+
+/** @var StoreFile $store */
+$store = app(StoreFile::class);
+
+$fileWithPath = new PresentedFile(
+    'context_name',
+    '/path/to/file',
+    PresentedFile::FILE_TYPE_PATH,
+    "optional_original_file_name.pdf"
+);
+
+$fileWithContent = new PresentedFile(
+    'context_name',
+    'this is a file content which the mime will be detected auto.',
+    PresentedFile::FILE_TYPE_CONTENT
+);
+
+$fileWithUrl = new PresentedFile(
+    'context_name',
+    'https://path_to_file_with_url.com/logo.png',
+    PresentedFile::FILE_TYPE_URL
+);
+
+$fileBase64 = new PresentedFile(
+    'context_name',
+    'base_64_encoded_content=',
+    PresentedFile::FILE_TYPE_BASE64
+);
+
+$fileWithUploaded = new PresentedFile(
+    'image_context_name',
+    request()->file('company_logo'),
+    PresentedFile::FILE_TYPE_INSTANCE
+);
+
+$fileWithSymfonyFile = new PresentedFile(
+    'context_name',
+    new \Symfony\Component\HttpFoundation\File\File("/path_to_file.pdf"),
+    PresentedFile::FILE_TYPE_INSTANCE
+);
+
+/** @var \Reshadman\FileSecretary\Application\AddressableRemoteFile $response */
+$response = $store->execute($fileWithPath);
+
+dd($response->fullRelative());
+
+```
+
+
+#### 3. Manipulating Images
+For this feature you should:
+1. Create a context of type `"image"` in the contexts section
+of the config file.
+2. Create your needed templates in the `available_image_templates` of the config file.
+
+
+
 For using this feature you should:
  1. Create a context with `asset` category in the `contexts` section of the config file.
  2. Create an asset folder with proper config in the `asset_folders` section
