@@ -1,192 +1,62 @@
 # Laravel File Secretary
-Get rid of anything related to files in Laravel, This package handles all for you. Anything we mean.
+Get rid of anything related to files in Laravel, This package handles all for you.
 
 ## What does this package do?
- 1. **Handles your public assets** (.css, .js, .etc) to be served through your CDN provider.
+ 1. **Handles your public assets** (.css, .js, .etc) to be served through your 
+ CDN provider.
  Unlike other solutions 
- there is no runtime i/o needed for retrieving the unique id needed for cache purging on deploys.
- 2. **Handles all the image resizing needs** with simple configuration, Images are generated on the fly
- for once, and are stored in your CDN provider, They could be served without the participation of PHP
- all handled with a simple *nginx snippet*. 
- 3. **Detects redundant files**, File names are generated based on the filesize + a hash function.
- so redundant files could not exist technically, You can implement your own file name generator, too.
- 4. **Handles basic files** with a simple method call. They can be served without the participation of PHP.
- 5. **Allows Database Tracking** (Optional), you can use the eloquent model to relate files to your other models, easily.
+ there is no runtime i/o needed for retrieving the unique id needed for 
+ cache purging on deploys.
+ 
+ 2. **Handles all the image resizing needs** with simple configuration, 
+ Images are generated on the fly
+ for once, and are stored in your CDN provider, 
+ They could be served without the participation of PHP
+ all handled with a simple *nginx snippet* included in the package. 
+ 3. **Detects redundant files**, File names are generated based on the 
+ filesize + a hash function.
+ so redundant files could not exist technically, 
+ You can implement your own file name generator, too.
+ 4. **Handles basic files** with a simple method call. 
+ They can be served without the participation of PHP. and can they can
+ be addressed with the package's functions if they are public.
+ 5. **Allows Database Tracking** (Optional), 
+ you can use the eloquent model to relate files to your other models, easily.
  You can also implement your own eloquent model for more flexibility.
- 6. **Simple functions** for dealing with resizable image urls, file urls, asset urls etc.
- 7. **A Simple controller for serving private/public files** can be used to serve both resizable images, and basic files.
- You can implement your own access control for serving based on config.
+ 6. **Simple functions** for dealing with resizable image urls, file urls, 
+ asset urls etc.
+ 7. **A Simple controller for serving private/public files** can be used to 
+ serve both resizable images, and basic files.
+ You can implement your own access control for serving them based on config.
  
 ## Installation
 ```
 composer require reshadman/file-secretary 1.*
 ```
 
-## Configuration
+## Publishing vendor (Configuration, Migrations)
 To publish configuration:
 ```
-php artisqan vendor:publish --provider=Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider
+php artisqan vendor:publish \
+    --provider=Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider \
+    --tag=config
 ```
 
 > By default the migration for database tracking is also published, you delete it if you don't want the functionality.
 
-### Configuration data
-
-#### File name generator function:
-```php
-<?php 
-return [
-    // Other config elements...
-    'file_name_generator' => function (\Reshadman\FileSecretary\Application\PresentedFile $presentedFile) {
-        // This prevents multiple files with the same contents.
-        // And it is too rare, to have two different files with the same hash and size.
-        // You could also add an additional hash, but it will increase the filename size
-        // Which may lead to some problems in Windows systems.
-        $size = $presentedFile->getFileInstance()->getSize();
-        $hash = sha1_file($presentedFile->getFileInstance()->getPath());
-        return  $size . '-' . $hash;
-    },
-];
-``` 
-
-#### Database tracking:
-Database tracking is only possible with eloquent models, In the next releases
-they will be eloquent independent.
-
-You can use the default model, with your custom table name, or you can create your own model
-and address it in the config file.
-
-Your model should implement the following interface:
-```php
-<?php
-
-\Reshadman\FileSecretary\Application\PersistableFile::class;
-
+To publish migration:
+```
+php artisqan vendor:publish \
+    --provider=Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider \
+    --tag=migrations
 ```
 
-or you can simply extend the package's default eloquent model.
+### Configuration
+For understanding how this package works please read the commented documentation
+blocks in the default config file here:
 
-```php
-<?php 
-return [
-    // Other config elements...
-    'eloquent' => [
-        'model' => \Reshadman\FileSecretary\Application\EloquentPersistedFile::class,
+[config/file_secretary.php](https://github.com/reshadman/file-secretary/blob/master/fixtures/config/file_secretary.php)
 
-        'table' => 'system__files'
-    ],
-];
-``` 
-#### Image templates:
-The package offers a very simple way for manipulating images, we call them **Templates**. It is based on [Intervention Package](http://image.intervention.io/). 
-With a COC wrapper. You name your templates in the config file, map them to a template class, and they will be manipulated, 
-stored and served on the cloud as simple as that, you just need to follow the configuration spec.
-By default a default template is included in the package which allows:
- - Resizing: (defined width, defined height), (defined width, auto height and vice versa you can also define the fit strategy)
- - Encodings: Images can be encoded with the exact encoding of their parent file, or you can specify your needed encodings.
- - Quality: You can specify the quality, too
- - Stripping: Sometimes the ICC profiles of the images are embedded in the file. Removing
- them can reduce the file size dramatically. You can also use this option.
-```php
-<?php 
-return [
-    // Other config elements...
-    'available_image_templates' => [
-        'companies_logo_200x200' => [
-            'class' => \Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class,
-            'args' => [
-                'width' => 200,
-                'height' => 200,
-                'encodings' => null, // When null only parent file encoding is allowed.
-                'strip' =>  false, // removes the ICC profile when imagick is used.
-            ],
-        ],
-        'companies_logo_201xauto' => [
-            'class' => \Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class,
-            'args' => [
-                'width' => 201,
-                'height' => null, // Height will be calculated automatically
-                'mode' => \Reshadman\FileSecretary\Infrastructure\Images\TemplateManager::MODE_FIT, // The image will fit
-                'encodings' => [
-                    'png' // Ony png extension is served otherwise it throws 404 exception
-                ]
-            ],
-        ],
-    ],
-];
-```  
-
-#### Contexts:
-Contexts allows you to use different laravel filesystem drivers for each of your needed, including
-*Public Assets*, *Resizable Images* and *Basic Files*:
-Each context must have one of these categories
- - `basic_file`
- - `image`
- - `asset`
- 
-You can use the ENUM from:
-```php
-<?php
- \Reshadman\FileSecretary\Application\ContextCategoryTypes::class;
-```
-
-```php
-<?php 
-return [
-    // Other config elements...
-    'contexts' => [
-        // The array key is the context name
-        'file_manager_private' => [
-            
-            // The folder, all basic files for this 
-            // context will be store in this folder of your laravel file driver in this format:
-            // folder_name/xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxx.ext
-            'context_folder' => 'file_manager', 
-            
-            // You laravel file system driver name
-            'driver' => 'private',
-            
-            // If you want you can specify a base address for your url,
-            // In case of rackspace it can be something like the following:
-            // https://YOUR_UNIQUE_RACKSPACE_PUBLIC_CDN_SUBDOMAIN.rackspace.com/xxxxxx/
-            // When you call the address generator functions it will append the base address so you
-            // have a full URL.
-            'driver_based_address' => null,
-            
-            // The Context Category, you can have assets, image and basic files, image is used to resize images.
-            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_BASIC_FILE,
-            
-            // You can implement your own privacy class which will deny access if the file
-            // is requested through the package's default file server controller.
-            'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
-        ],
-        
-        // Contexts with category: 'image' are used for manipulateable image files
-        // They are automatically stored in this format:
-        //   xxxx-xxxxxxxxxxxxxxxxxxxxxxxx/main.png
-        //   xxxx-xxxxxxxxxxxxxxxxxxxxxxxx/companies_logo_64x64.png
-        'images_public' => [
-            'driver' => 'public',
-            'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
-            'driver_base_address' => 'https://images.jobinja.net/',
-            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
-            'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
-        ],
-        
-        // You can serve your public assets through the CDN, after
-        // each change you may run the asset publish command
-        // Which will upload your assets to the cloud and then you can
-        // use the package's functions to address them.
-        // php artisan file-secretary:upload-assets {--tags}
-        'assets' => [
-            'driver' => 'public',
-            'context_folder' => 'assets',
-            'driver_base_address' => 'https://assets.jobinja.ir/',
-            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_ASSET,
-        ]
-    ],
-];
-```  
 
 ## Running the Integration Tests
  There are integration tests written for this package. To run integration
