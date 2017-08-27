@@ -110,17 +110,43 @@
     |                             Your own ones based on the proper interfaces of the package.
     */
     'contexts' => [
-        'images_public' => [
-            'driver' => 'public_rackspace_driver',
+
+        'file_manager_private' => [
+            'context_folder' => 'file_manager',
+            'driver' => 'private',
+            'driver_based_address' => null,
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_BASIC_FILE,
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
+        ],
+
+        'file_manager_public' => [
+            'context_folder' => 'file_manager',
+            'driver' => 'public',
+            'driver_based_address' => 'https://files.jobinja.ir/',
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_BASIC_FILE,
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
+        ],
+
+        'images_private' => [
+            'driver' => 'private',
+            'driver_base_address' => null,
             'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
-            'driver_base_address' => 'https://images.jobinja.net/',
+            'category' => 'images',
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
+        ],
+
+        'images_public' => [
+            'driver' => 'public',
+            'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
+            'driver_base_address' => 'https://images.jobinja.ir/',
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
         ],
+
         'assets' => [
-            'driver' => 'rackspace_asset_driver',
+            'driver' => 'public',
             'context_folder' => 'assets',
-            'driver_base_address' => 'https://assets.jobinja.net/',
+            'driver_base_address' => 'https://assets.jobinja.ir/',
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_ASSET,
         ]
     ],

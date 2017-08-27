@@ -34,7 +34,7 @@ class MakeAndStoreImage
      * @param null $extension
      * @return MakeAndStoreImageResponse
      */
-    public function execute($context, $uuid, $imageable, $template, $extension = null)
+    public function execute($context, $uuid, $imageable, $template, $extension)
     {
         // Create the template.
         $response = $this->makeImage->execute($imageable, $template, $extension);

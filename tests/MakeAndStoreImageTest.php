@@ -2,16 +2,16 @@
 
 namespace FileSecretaryTests;
 
-use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
+use Ramsey\Uuid\Uuid;
 use Reshadman\FileSecretary\Application\AddressableRemoteFile;
 use Reshadman\FileSecretary\Application\PresentedFile;
+use Reshadman\FileSecretary\Application\Usecases\MakeAndStoreImage;
 use Reshadman\FileSecretary\Application\Usecases\MakeImage;
 use Reshadman\FileSecretary\Application\Usecases\StoreFile;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
-use Reshadman\FileSecretary\Infrastructure\Images\FileSecretaryImageManager;
 
-class ImageManagerTest extends BaseTestCase
+class MakeAndStoreImageTest extends BaseTestCase
 {
     private $imageToStore;
 
@@ -54,7 +54,10 @@ class ImageManagerTest extends BaseTestCase
             "images_public",
             $this->imageToStore,
             PresentedFile::FILE_TYPE_PATH,
-            "logo.png"
+            "logo.png",
+            [
+                'uuid' => $this->uuid = Uuid::uuid4()->toString()
+            ]
         ));
 
 
@@ -68,56 +71,52 @@ class ImageManagerTest extends BaseTestCase
 
         $this->im = app(ImageManager::class);
 
-
     }
 
-    public function testExtensionEqualityIsCheckedCorrectly()
+    public function testImageIsManipulatedAndStoredCorrectly()
     {
-        $this->assertTrue(FileSecretaryImageManager::extensionsAreEqual('jpg', 'jpg'));
+        $imageable = file_get_contents(__DIR__ . '/../stub/logo.jpg');
 
-        $this->assertTrue(FileSecretaryImageManager::extensionsAreEqual('jpg', 'JPG'));
+        /** @var MakeAndStoreImage $store */
+        $store = app(MakeAndStoreImage::class);
 
-        $this->assertFalse(FileSecretaryImageManager::extensionsAreEqual('png', 'jpg'));
+        $uuid = $this->uuid;
+
+        $response = $store->execute("images_public", $uuid, $imageable, "companies_logo_200x200", "jpg");
+
+        $this->assertContains($this->uuid, $response->getRemoteFile()->fullRelative());
+
+        $this->assertContains($this->im->make($imageable)->mime(), $this->im->make($response->getMadeImageResponse()->image())->mime());
+
+        $this->assertTrue($this->secManager->getContextDriver("images_public")->exists($response->getRemoteFile()->fullRelative()));
     }
 
-    public function testImageIsResizedWithNoException()
-    {
-
-        $made = $this->make->execute($this->contents, "companies_logo_200x200", "jpg");
-
-        $this->assertTrue(true, "Successful Generation.");
-
-        $image = $this->im->make($made->image());
-
-        $this->assertContains("image/jpeg", strtolower($image->mime()));
-
-        $this->assertEquals($image->getWidth(), 200);
-    }
-
-    public function testThrowsExceptionWhenNullEncodingInConfigAndWrongEncodingWanted()
+    public function testItThrowsExceptionWhenNoExceptionGiven()
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $this->make->execute($this->contents, "companies_logo_200x200", "png");
+        $imageable = file_get_contents(__DIR__ . '/../stub/logo.jpg');
+
+        /** @var MakeAndStoreImage $store */
+        $store = app(MakeAndStoreImage::class);
+
+        $uuid = $this->uuid;
+
+        $store->execute("images_public", $uuid, $imageable, "companies_logo_200x200", null);
+
     }
 
-    public function testThrowsExceptionWhenInvalidTemplateGiven()
+    public function testItThrowsExceptionWhenInvalidExtensionGiven()
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $this->make->execute($this->contents, "companies_logo_200x201", "jpg");
-    }
+        $imageable = file_get_contents(__DIR__ . '/../stub/logo.jpg');
 
-    public function testWithEncoding()
-    {
-        $made = $this->make->execute($this->contents, "companies_logo_201xauto", "png");
+        /** @var MakeAndStoreImage $store */
+        $store = app(MakeAndStoreImage::class);
 
-        $this->assertContains("png", $this->im->make($made->image())->mime());
-    }
+        $uuid = $this->uuid;
 
-    public function testThrowsExceptionWhenExtensionIsNotAvailable()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->make->execute($this->contents, "companies_logo_201xauto", "jpg");
+        $store->execute("images_public", $uuid, $imageable, "companies_logo_200x200", 'png');
     }
 }

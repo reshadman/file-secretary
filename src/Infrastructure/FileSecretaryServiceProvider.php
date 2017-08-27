@@ -10,6 +10,14 @@ class FileSecretaryServiceProvider extends ServiceProvider
 {
     public function boot(Dispatcher $dispatcher)
     {
+        $this->publishes([
+            __DIR__ . '/../../fixtures/config/file_secretary.php' => config_path('file_secretary.php')
+        ], 'config');
+
+        $this->publishes([
+            __DIR__ . '/../../'
+        ]);
+
         $events = $this->app['config']->get('file_secretary.listen', []);
 
         foreach ($events as $event => $listeners) {
