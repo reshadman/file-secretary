@@ -21,11 +21,23 @@
     'available_image_templates' => [
         'companies_logo_200x200' => [
             'class' => \Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class,
-            'args' => ['width' => 200, 'height' => 200, 'encodings' => null],
+            'args' => [
+                'width' => 200,
+                'height' => 200,
+                'encodings' => null, // When null only parent file encoding is allowed.
+                'strip' =>  false, // removes the ICC profile when imagick is used.
+            ],
         ],
-        'companies_logo_201x201' => [
+        'companies_logo_201xauto' => [
             'class' => \Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class,
-            'args' => ['width' => 200, 'height' => 200, 'encodings' => ['png']],
+            'args' => [
+                'width' => 201,
+                'height' => null, // Height will be calculated automatically
+                'mode' => \Reshadman\FileSecretary\Infrastructure\Images\TemplateManager::MODE_FIT, // The image will fit
+                'encodings' => [
+                    'png' // Ony png extension is served otherwise it throws 404 exception
+                ]
+            ],
         ],
     ],
     
