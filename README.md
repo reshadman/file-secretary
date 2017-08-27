@@ -61,7 +61,7 @@ blocks in the default config file here:
 ### Usage
 The best way to see the usage is by reading the integration tests.
 
-### 1. Uploading Purgeable Assets
+#### 1. Uploading Purgeable Assets
 ```bash
 php artisan file-secretary:upload-assets --tags=asset_1,asset_2
 ```
