@@ -42,73 +42,58 @@
     ],
     
     'contexts' => [
-
+        // The array key is the context name
         'file_manager_private' => [
 
+            // The folder, all basic files for this
+            // context will be store in this folder of your laravel file driver in this format:
+            // folder_name/xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxx.ext
             'context_folder' => 'file_manager',
 
+            // You laravel file system driver name
             'driver' => 'private',
 
+            // If you want you can specify a base address for your url,
+            // In case of rackspace it can be something like the following:
+            // https://YOUR_UNIQUE_RACKSPACE_PUBLIC_CDN_SUBDOMAIN.rackspace.com/xxxxxx/
+            // When you call the address generator functions it will append the base address so you
+            // have a full URL.
             'driver_based_address' => null,
 
+            // The Context Category, you can have assets, image and basic files, image is used to resize images.
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_BASIC_FILE,
 
+            // You can implement your own privacy class which will deny access if the file
+            // is requested through the package's default file server controller.
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
-
         ],
-
         'file_manager_public' => [
-
             'context_folder' => 'file_manager',
-
             'driver' => 'public',
-
             'driver_based_address' => 'https://files.jobinja.ir/',
-
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_BASIC_FILE,
-
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
-
         ],
-
         'images_private' => [
-
             'driver' => 'private',
-
             'driver_base_address' => null,
-
             'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
-
             'category' => 'images',
-
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
         ],
-
         'images_public' => [
-
             'driver' => 'public',
-
             'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
-
             'driver_base_address' => 'https://images.jobinja.ir/',
-
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
-
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
-
         ],
-
         'assets' => [
-
             'driver' => 'public',
-
             'context_folder' => 'assets',
-
             'driver_base_address' => 'https://assets.jobinja.ir/',
-
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_ASSET,
         ]
-
     ],
 
     'asset_folders' => [

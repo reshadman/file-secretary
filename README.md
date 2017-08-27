@@ -77,7 +77,7 @@ return [
     ],
 ];
 ``` 
-### Image templates:
+#### Image templates:
 The package offers a very simple way for manipulating images, we call them **Templates**. It is based on [Intervention Package](http://image.intervention.io/). 
 With a COC wrapper. You name your templates in the config file, map them to a template class, and they will be manipulated, 
 stored and served on the cloud as simple as that, you just need to follow the configuration spec.
@@ -116,6 +116,77 @@ return [
 ];
 ```  
 
+#### Contexts:
+Contexts allows you to use different laravel filesystem drivers for each of your needed, including
+*Public Assets*, *Resizable Images* and *Basic Files*:
+Each context must have one of these categories
+ - `basic_file`
+ - `image`
+ - `asset`
+ 
+You can use the ENUM from:
+```php
+<?php
+ \Reshadman\FileSecretary\Application\ContextCategoryTypes::class;
+```
+
+```php
+<?php 
+return [
+    // Other config elements...
+    'contexts' => [
+        // The array key is the context name
+        'file_manager_private' => [
+            
+            // The folder, all basic files for this 
+            // context will be store in this folder of your laravel file driver in this format:
+            // folder_name/xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxx.ext
+            'context_folder' => 'file_manager', 
+            
+            // You laravel file system driver name
+            'driver' => 'private',
+            
+            // If you want you can specify a base address for your url,
+            // In case of rackspace it can be something like the following:
+            // https://YOUR_UNIQUE_RACKSPACE_PUBLIC_CDN_SUBDOMAIN.rackspace.com/xxxxxx/
+            // When you call the address generator functions it will append the base address so you
+            // have a full URL.
+            'driver_based_address' => null,
+            
+            // The Context Category, you can have assets, image and basic files, image is used to resize images.
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_BASIC_FILE,
+            
+            // You can implement your own privacy class which will deny access if the file
+            // is requested through the package's default file server controller.
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
+        ],
+        
+        // Contexts with category: 'image' are used for manipulateable image files
+        // They are automatically stored in this format:
+        //   xxxx-xxxxxxxxxxxxxxxxxxxxxxxx/main.png
+        //   xxxx-xxxxxxxxxxxxxxxxxxxxxxxx/companies_logo_64x64.png
+        'images_public' => [
+            'driver' => 'public',
+            'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
+            'driver_base_address' => 'https://images.jobinja.net/',
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
+        ],
+        
+        // You can serve your public assets through the CDN, after
+        // each change you may run the asset publish command
+        // Which will upload your assets to the cloud and then you can
+        // use the package's functions to address them.
+        // php artisan file-secretary:upload-assets {--tags}
+        'assets' => [
+            'driver' => 'public',
+            'context_folder' => 'assets',
+            'driver_base_address' => 'https://assets.jobinja.ir/',
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_ASSET,
+        ]
+    ],
+];
+```  
 
 ## Running the Integration Tests
  There are integration tests written for this package. To run integration
