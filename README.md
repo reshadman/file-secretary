@@ -35,7 +35,7 @@ tests do as the following:
 ## Package Roadmap
  1. Writing more integration tests + isolated object unit tests.
  2. Use more semantic names for features, class names and methods names.
- 3. Make the tracking eloquent independent.
+ 3. Make the tracking, eloquent independent.
  4. Refactor the code both for design and performance.
 
 ## About the package
