@@ -21,11 +21,9 @@ Get rid of anything related to files in Laravel, This package handles all for yo
 There are integration tests written for this package. To run integration
 tests do as the following:
 
- 1. Create your `phpunit.xml` file based on the packages's `phpunit.dist.xml`:3
+ 1. Create your `phpunit.xml` file based on the packages's `phpunit.dist.xml`: `cp phpunit.dist.xml phpunit.xml`
  
- `cp phpunit.dist.xml phpunit.xml`
  2. Fill the phpunit config with your environment variables.
- 
  The package has been tested with **Rackspace** Object storage, to prove the 
  functionality in cloud. You can change the `phpunit.xml` file and the configs in `fixtures/config/`
  to integrate them with your testing environment.
