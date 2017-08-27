@@ -66,6 +66,16 @@ The best way to see the usage is by reading the integration tests.
 php artisan file-secretary:upload-assets --tags=asset_1,asset_2
 ```
 
+For using this feature you should:
+ 1. Create a context with `asset` category in the `contexts` section of the config file.
+ 2. Create an asset folder with proper config in the `asset_folders` section
+ of the config file.
+ 
+The asset_1 and asset_2 options in **--tags=asset_1,asset_2** represent the name
+of the asset folders which should be defined in the config file.
+
+
+
 ### 2. Storing Basic And Image Files
 For this feature you should:
 1. Create a context of type `"basic_file"` in the contexts section
@@ -137,16 +147,6 @@ For this feature you should:
 1. Create a context of type `"image"` in the contexts section
 of the config file.
 2. Create your needed templates in the `available_image_templates` of the config file.
-
-
-
-For using this feature you should:
- 1. Create a context with `asset` category in the `contexts` section of the config file.
- 2. Create an asset folder with proper config in the `asset_folders` section
- of the config file.
- 
-The asset_1 and asset_2 options in **--tags=asset_1,asset_2** represent the name
-of the asset folders which should be defined in the config file.
 
 
 ### Running the Integration Tests
