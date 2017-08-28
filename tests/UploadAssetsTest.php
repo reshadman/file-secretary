@@ -23,7 +23,7 @@ class UploadAssetsTest extends BaseTestCase
 
         $driver = $secretaryManager->getContextDriver($context = $secretaryManager->getConfig('asset_folders.asset_1')['context']);
 
-        $filePath = $secretaryManager->getAssetStartingPath($context, 'asset_1') . '/' .env('ASSET_1_ID') .  '/buy.csv';
+        $filePath = $secretaryManager->getAssetStartingPath($context, 'asset_1') . '/' . env('ASSET_1_ID') . '/buy.csv';
 
         $contents = $driver->get($filePath);
 

@@ -3,11 +3,11 @@
 namespace FileSecretaryTests;
 
 use FileSecretaryTests\Overrides\Application;
+use FileSecretaryTests\Overrides\ConsoleKernel;
 use FileSecretaryTests\Overrides\LoadConfiguration;
 use Illuminate\Contracts\Console\Kernel;
 use Orchestra\Testbench\TestCase;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider;
-use FileSecretaryTests\Overrides\ConsoleKernel;
 
 class BaseTestCase extends TestCase
 {

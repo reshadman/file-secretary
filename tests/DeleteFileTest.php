@@ -2,8 +2,8 @@
 
 namespace FileSecretaryTests;
 
-use Reshadman\FileSecretary\Application\Usecases\DeleteFile;
 use Reshadman\FileSecretary\Application\PresentedFile;
+use Reshadman\FileSecretary\Application\Usecases\DeleteFile;
 use Reshadman\FileSecretary\Application\Usecases\StoreFile;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
@@ -11,7 +11,7 @@ class DeleteFileTest extends BaseTestCase
 {
     public function testDeleteWorks()
     {
-        $file = __DIR__  . '/../stub/logo.jpg';
+        $file = __DIR__ . '/../stub/logo.jpg';
 
         $presented = new PresentedFile('file_manager_private', $file, PresentedFile::FILE_TYPE_PATH);
 
@@ -45,7 +45,7 @@ class DeleteFileTest extends BaseTestCase
             return $store->execute($presented);
         };
 
-        $addressable1 = $creator($file1 = __DIR__  . '/../stub/logo.jpg');
+        $addressable1 = $creator($file1 = __DIR__ . '/../stub/logo.jpg');
         $addressable2 = $creator($file2 = __DIR__ . '/../stub/asset_tags/asset_1/buy.csv');
 
         $this->assertTrue($manager->getContextDriver($context)->exists($addressable1->fullRelative()));

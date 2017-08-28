@@ -2,7 +2,6 @@
 
 namespace FileSecretaryTests;
 
-use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use Reshadman\FileSecretary\Application\AddressableRemoteFile;
 use Reshadman\FileSecretary\Application\PresentedFile;
@@ -45,7 +44,7 @@ class ImageManagerTest extends BaseTestCase
     {
         parent::setUp();
 
-        $this->imageToStore = __DIR__ .'/../stub/logo.jpg';
+        $this->imageToStore = __DIR__ . '/../stub/logo.jpg';
 
         /** @var StoreFile $store */
         $this->store = app(StoreFile::class);

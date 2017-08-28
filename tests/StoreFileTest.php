@@ -9,7 +9,7 @@ class StoreFileTest extends BaseTestCase
 {
     public function testStoreFileForImage()
     {
-        $file = __DIR__  . '/../stub/logo.jpg';
+        $file = __DIR__ . '/../stub/logo.jpg';
 
         $md5Content = file_get_contents($file);
 
@@ -27,7 +27,7 @@ class StoreFileTest extends BaseTestCase
 
     public function testStoreFileForBasicFile()
     {
-        $file = __DIR__  . '/../stub/logo.jpg';
+        $file = __DIR__ . '/../stub/logo.jpg';
 
         $md5Content = file_get_contents($file);
 

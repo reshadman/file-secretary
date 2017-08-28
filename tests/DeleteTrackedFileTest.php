@@ -25,7 +25,7 @@ class DeleteTrackedFileTest extends BaseTestCase
 
         $context = "file_manager_public";
 
-        $pGenerator = function () use($file, $context) {
+        $pGenerator = function () use ($file, $context) {
             return new PresentedFile(
                 $context,
                 $file,
@@ -37,7 +37,7 @@ class DeleteTrackedFileTest extends BaseTestCase
         $p = $pGenerator();
         $p2 = $pGenerator();
 
-        $create = function () use($file, $context, $p) {
+        $create = function () use ($file, $context, $p) {
             /** @var StoreTrackedFile $storeCommand */
             $storeCommand = app(StoreTrackedFile::class);
 

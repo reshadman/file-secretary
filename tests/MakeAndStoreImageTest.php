@@ -45,7 +45,7 @@ class MakeAndStoreImageTest extends BaseTestCase
     {
         parent::setUp();
 
-        $this->imageToStore = __DIR__ .'/../stub/logo.jpg';
+        $this->imageToStore = __DIR__ . '/../stub/logo.jpg';
 
         /** @var StoreFile $store */
         $this->store = app(StoreFile::class);
@@ -86,7 +86,8 @@ class MakeAndStoreImageTest extends BaseTestCase
 
         $this->assertContains($this->uuid, $response->getRemoteFile()->fullRelative());
 
-        $this->assertContains($this->im->make($imageable)->mime(), $this->im->make($response->getMadeImageResponse()->image())->mime());
+        $this->assertContains($this->im->make($imageable)->mime(),
+            $this->im->make($response->getMadeImageResponse()->image())->mime());
 
         $this->assertTrue($this->secManager->getContextDriver("images_private")->exists($response->getRemoteFile()->fullRelative()));
     }

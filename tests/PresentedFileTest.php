@@ -11,7 +11,7 @@ class PresentedFileTest extends BaseTestCase
 
     public function testUrlFile()
     {
-        $contents = file_get_contents($url ="https://www.google.com/robots.txt");
+        $contents = file_get_contents($url = "https://www.google.com/robots.txt");
 
         $hash = md5($contents);
 
@@ -24,7 +24,7 @@ class PresentedFileTest extends BaseTestCase
 
     public function testWithFileContentImage()
     {
-        $fileContent = file_get_contents(__DIR__ .'/../stub/logo.jpg');
+        $fileContent = file_get_contents(__DIR__ . '/../stub/logo.jpg');
 
         $hash = md5($fileContent);
 
@@ -35,7 +35,7 @@ class PresentedFileTest extends BaseTestCase
 
     public function testWithFileContentCsv()
     {
-        $fileContent = file_get_contents(__DIR__ .'/../stub/asset_tags/asset_1/buy.csv');
+        $fileContent = file_get_contents(__DIR__ . '/../stub/asset_tags/asset_1/buy.csv');
 
         $hash = md5($fileContent);
 
@@ -48,7 +48,7 @@ class PresentedFileTest extends BaseTestCase
 
     public function testWithFilePath()
     {
-        $fileContent = file_get_contents($filePath = __DIR__ .'/../stub/logo.jpg');
+        $fileContent = file_get_contents($filePath = __DIR__ . '/../stub/logo.jpg');
 
         $hash = md5($fileContent);
 
@@ -62,7 +62,7 @@ class PresentedFileTest extends BaseTestCase
 
     public function testWithBase64Encode()
     {
-        $fileContent = base64_encode($content = file_get_contents($filePath = __DIR__ .'/../stub/logo.jpg'));
+        $fileContent = base64_encode($content = file_get_contents($filePath = __DIR__ . '/../stub/logo.jpg'));
 
         $hash = md5($content);
 
