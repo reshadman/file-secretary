@@ -89,7 +89,7 @@ class UploadAsAssetCommand
      *
      * @param $tagData
      */
-    protected function checkExistence($tagData): void
+    protected function checkExistence($tagData)
     {
         if ( ! $this->nativeFiles->exists($tagData['path'])) {
             throw new \InvalidArgumentException("Path {$tagData['path']} not found.");
