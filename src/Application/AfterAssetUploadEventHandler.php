@@ -50,7 +50,7 @@ class AfterAssetUploadEventHandler
 
             $contents = file_get_contents($basePath);
 
-            $contents .= "\n" . ($envStr = $envKey.'='.$event->newUniqueKey);
+            $contents .= "\n" . ($envStr = $envKey . '=' . $event->newUniqueKey);
 
             file_put_contents($basePath, $contents);
         }
@@ -62,7 +62,7 @@ class AfterAssetUploadEventHandler
         $driver = $this->secretaryManager->getContextDriver($assetTagData['context']);
 
         foreach ($driver->directories($tagStart) as $directory) {
-            if (!Str::endsWith($directory, [$event->newUniqueKey, $currentEnv])) {
+            if ( ! Str::endsWith($directory, [$event->newUniqueKey, $currentEnv])) {
                 $driver->deleteDirectory($directory);
             }
         }

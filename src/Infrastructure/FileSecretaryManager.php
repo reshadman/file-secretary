@@ -32,135 +32,6 @@ class FileSecretaryManager
     }
 
     /**
-     * Get context illuminate driver.
-     *
-     * @param $context
-     * @return FilesystemAdapter|mixed
-     */
-    public function getContextDriver($context)
-    {
-        return $this->filesystemManager->disk($this->getConfig('contexts.' . $context . '.driver'));
-    }
-
-    /**
-     * Get context starting relative path.
-     *
-     * @param $context
-     * @return array|mixed
-     */
-    public function getContextStartingPath($context)
-    {
-        return $this->getConfig("contexts.{$context}.context_folder");
-    }
-
-    /**
-     * Get asset starting path. which appends the asset tag(folder)
-     * to the asset's context starting path.
-     *
-     * @param $context
-     * @param $assetTag
-     * @return string
-     */
-    public function getAssetStartingPath($context, $assetTag)
-    {
-        return $this->getContextStartingPath($context) . '/' . $assetTag;
-    }
-
-    /**
-     * Get config by dot notation.
-     *
-     * @param null $key
-     * @param null $def
-     * @return array|mixed
-     */
-    public function getConfig($key = null, $def = null)
-    {
-        if ($key === null) {
-            return $this->config;
-        }
-        return array_get($this->config, $key, $def);
-    }
-
-    /**
-     * Replace the first occurrence of a substring with
-     * the given one in the subject string.
-     *
-     * @param $from
-     * @param $to
-     * @param $subject
-     * @return string
-     */
-    public function replaceFirst($from, $to, $subject)
-    {
-        $from = '/' . preg_quote($from, '/') . '/';
-
-        return preg_replace($from, $to, $subject, 1);
-    }
-
-    /**
-     * Get context array meta data.
-     *
-     * @param $context
-     * @return array
-     */
-    public function getContextData($context)
-    {
-        return $this->getConfig("contexts.{$context}");
-    }
-
-    /**
-     * Get mimetype for the given extension
-     *
-     * @param $ext
-     * @return string|null
-     */
-    public function getMimeForExtension($ext)
-    {
-        return app(MimeDbRepository::class)->findType($ext);
-    }
-
-    /**
-     * We prefer some sibling extensions over the others.
-     *
-     * @param $ext
-     * @return string
-     */
-    public static function normalizeExtension($ext)
-    {
-        $map = [
-            'jpeg' => 'jpg'
-        ];
-
-        if (array_key_exists($ext, $map)) {
-            return $map[$ext];
-        }
-
-        return $ext;
-    }
-
-    /**
-     * Get persistence eloquent model.
-     *
-     * @return Model|PersistableFile
-     */
-    public function getPersistModel()
-    {
-        $model = $this->getConfig("eloquent.model");
-
-        if ($model === null) {
-            throw new \InvalidArgumentException("Model Can not be null");
-        }
-
-        $model = app($model);
-
-        if ( ! is_a($model, Model::class) || ! is_a($model, PersistableFile::class)) {
-            throw new \InvalidArgumentException("Model is not valid.");
-        }
-
-        return $model;
-    }
-
-    /**
      * Reinitialize the config.
      *
      * @param array $config
@@ -288,15 +159,144 @@ class FileSecretaryManager
                 );
             }
 
-            if (!array_key_exists('path', $folder) || !is_string($folder['path'])) {
+            if ( ! array_key_exists('path', $folder) || ! is_string($folder['path'])) {
                 throw new \InvalidArgumentException("You should provide the path for the folder.");
             }
 
-            if (!array_key_exists('env_key', $folder)) {
+            if ( ! array_key_exists('env_key', $folder)) {
                 throw new \InvalidArgumentException("A unique env key is needed for this folder.");
             }
         }
 
         return $config;
+    }
+
+    /**
+     * We prefer some sibling extensions over the others.
+     *
+     * @param $ext
+     * @return string
+     */
+    public static function normalizeExtension($ext)
+    {
+        $map = [
+            'jpeg' => 'jpg'
+        ];
+
+        if (array_key_exists($ext, $map)) {
+            return $map[$ext];
+        }
+
+        return $ext;
+    }
+
+    /**
+     * Get context illuminate driver.
+     *
+     * @param $context
+     * @return FilesystemAdapter|mixed
+     */
+    public function getContextDriver($context)
+    {
+        return $this->filesystemManager->disk($this->getConfig('contexts.' . $context . '.driver'));
+    }
+
+    /**
+     * Get config by dot notation.
+     *
+     * @param null $key
+     * @param null $def
+     * @return array|mixed
+     */
+    public function getConfig($key = null, $def = null)
+    {
+        if ($key === null) {
+            return $this->config;
+        }
+        return array_get($this->config, $key, $def);
+    }
+
+    /**
+     * Get asset starting path. which appends the asset tag(folder)
+     * to the asset's context starting path.
+     *
+     * @param $context
+     * @param $assetTag
+     * @return string
+     */
+    public function getAssetStartingPath($context, $assetTag)
+    {
+        return $this->getContextStartingPath($context) . '/' . $assetTag;
+    }
+
+    /**
+     * Get context starting relative path.
+     *
+     * @param $context
+     * @return array|mixed
+     */
+    public function getContextStartingPath($context)
+    {
+        return $this->getConfig("contexts.{$context}.context_folder");
+    }
+
+    /**
+     * Replace the first occurrence of a substring with
+     * the given one in the subject string.
+     *
+     * @param $from
+     * @param $to
+     * @param $subject
+     * @return string
+     */
+    public function replaceFirst($from, $to, $subject)
+    {
+        $from = '/' . preg_quote($from, '/') . '/';
+
+        return preg_replace($from, $to, $subject, 1);
+    }
+
+    /**
+     * Get context array meta data.
+     *
+     * @param $context
+     * @return array
+     */
+    public function getContextData($context)
+    {
+        return $this->getConfig("contexts.{$context}");
+    }
+
+    /**
+     * Get mimetype for the given extension
+     *
+     * @param $ext
+     * @return string|null
+     */
+    public function getMimeForExtension($ext)
+    {
+        return app(MimeDbRepository::class)->findType($ext);
+    }
+
+    /**
+     * Get persistence eloquent model.
+     *
+     * @return Model|PersistableFile
+     */
+    public function getPersistModel()
+    {
+        $model = $this->getConfig("eloquent.model");
+
+        if ($model === null) {
+            throw new \InvalidArgumentException("Model Can not be null");
+        }
+
+        $model = app($model);
+
+        if ( ! is_a($model, Model::class) || ! is_a($model, PersistableFile::class)) {
+            throw new \InvalidArgumentException("Model is not valid.");
+        }
+
+        return $model;
     }
 }

@@ -119,6 +119,44 @@ class DynamicResizableTemplate extends AbstractDynamicTemplate implements Dynami
     }
 
     /**
+     * Check that arguments are provided.
+     *
+     * @param $args
+     * @return mixed
+     */
+    protected function checkArgs($args)
+    {
+        if (
+            ( ! array_key_exists('width', $args) || ! array_key_exists('height', $args)) &&
+            ( ! array_key_exists('max_width', $args) || ! array_key_exists('max_height', $args)) &&
+            ( ! array_key_exists('min_width', $args) || ! array_key_exists('min_height', $args))
+        ) {
+            throw new \InvalidArgumentException("Width and height are required.");
+        }
+        return $args;
+    }
+
+    /**
+     * Apply blur to image
+     *
+     * @param \Intervention\Image\Image $image
+     * @param                           $blur
+     * @return \Intervention\Image\Image
+     */
+    protected function applyBlurToImage(InterventionImage $image, $blur)
+    {
+        $image->brightness(5);
+
+        if (is_a($image->getDriver(), ImagickDriver::class)) {
+            $image->getCore()->blurImage($blur, $blur * 0.5);
+        } else {
+            $image->blur($blur > 100 ? 100 : $blur);
+        }
+
+        return $image;
+    }
+
+    /**
      * If given image is png and it may have transparent background
      * we will generate a canvas(empty image) with given width and height
      * and insert the original png image into that.
@@ -147,51 +185,13 @@ class DynamicResizableTemplate extends AbstractDynamicTemplate implements Dynami
         return isset(static::$driver) ? new ImageManager(['driver' => static::$driver]) : app('image');
     }
 
-    /**
-     * Check that arguments are provided.
-     *
-     * @param $args
-     * @return mixed
-     */
-    protected function checkArgs($args)
-    {
-        if (
-            (!array_key_exists('width', $args) || !array_key_exists('height', $args)) &&
-            (!array_key_exists('max_width', $args) || !array_key_exists('max_height', $args)) &&
-            (!array_key_exists('min_width', $args) || !array_key_exists('min_height', $args))
-        ) {
-            throw new \InvalidArgumentException("Width and height are required.");
-        }
-        return $args;
-    }
-
-    /**
-     * Apply blur to image
-     *
-     * @param \Intervention\Image\Image $image
-     * @param                           $blur
-     * @return \Intervention\Image\Image
-     */
-    protected function applyBlurToImage(InterventionImage $image, $blur)
-    {
-        $image->brightness(5);
-
-        if (is_a($image->getDriver(), ImagickDriver::class)) {
-            $image->getCore()->blurImage($blur, $blur * 0.5);
-        } else {
-            $image->blur($blur > 100 ? 100 : $blur);
-        }
-
-        return $image;
-    }
-
     public function finalize(InterventionImage $image, $wantedFormat)
     {
         $quality = $this->getQuality();
 
         $strip = $this->shouldStrip();
 
-        if ($quality === null && !$strip) {
+        if ($quality === null && ! $strip) {
             return parent::finalize($image, $wantedFormat);
         }
 

@@ -3,35 +3,13 @@
 namespace Reshadman\FileSecretary\Infrastructure\Images\Templates;
 
 use Intervention\Image\Image;
+use Reshadman\FileSecretary\Infrastructure\Images\DynamicTemplateInterface;
 use Reshadman\FileSecretary\Infrastructure\Images\FileSecretaryImageManager;
 use Reshadman\FileSecretary\Infrastructure\MimeDbRepository;
-use Reshadman\FileSecretary\Infrastructure\Images\DynamicTemplateInterface;
 
 abstract class AbstractDynamicTemplate implements DynamicTemplateInterface
 {
     protected $args = [];
-
-    public function setArgs(array $args = [])
-    {
-        $this->args = $args;
-        return $this;
-    }
-
-    public function getArg($key, $force = false)
-    {
-        $args = $this->getArgs();
-
-        if ($force && ! isset($args[$key])) {
-            throw new \LogicException("Arg : {$key} not given.");
-        }
-
-        return array_get($args, $key);
-    }
-
-    public function getArgs()
-    {
-        return $this->args;
-    }
 
     public function finalize(Image $image, $wantedFormat)
     {
@@ -60,6 +38,28 @@ abstract class AbstractDynamicTemplate implements DynamicTemplateInterface
         if ( ! in_array($extension, $availableExtensions)) {
             throw new \InvalidArgumentException("Given extension is not supported.");
         }
+    }
+
+    public function getArg($key, $force = false)
+    {
+        $args = $this->getArgs();
+
+        if ($force && ! isset($args[$key])) {
+            throw new \LogicException("Arg : {$key} not given.");
+        }
+
+        return array_get($args, $key);
+    }
+
+    public function getArgs()
+    {
+        return $this->args;
+    }
+
+    public function setArgs(array $args = [])
+    {
+        $this->args = $args;
+        return $this;
     }
 
     /**

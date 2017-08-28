@@ -29,7 +29,7 @@ class DownloadBasicFileAction extends Controller
 
         $headers = [
             'Content-type' => $mimeType,
-            'Content-Disposition' => 'attachment; filename='. $fileName,
+            'Content-Disposition' => 'attachment; filename=' . $fileName,
         ];
 
         $contents = $driver->get($path);

@@ -31,6 +31,18 @@ class FileSecretaryImageManager
         $this->templateManager = $templateManager;
     }
 
+    public static function extensionsAreEqual($first, $second)
+    {
+        $first = strtolower($first);
+        $second = strtolower($second);
+
+        $mimeRepo = app(MimeDbRepository::class);
+        $forFirst = $mimeRepo->findExtension($mimeRepo->findType($first));
+        $forSecond = $mimeRepo->findExtension($mimeRepo->findType($second));
+
+        return $forFirst === $forSecond;
+    }
+
     /**
      * Mutate the image based on the need of the given request
      *
@@ -46,17 +58,5 @@ class FileSecretaryImageManager
         $image = $instance->finalize($image, $request->extension());
 
         return new MadeImageResponse($image, $request->extension());
-    }
-
-    public static function extensionsAreEqual($first, $second)
-    {
-        $first = strtolower($first);
-        $second = strtolower($second);
-
-        $mimeRepo = app(MimeDbRepository::class);
-        $forFirst = $mimeRepo->findExtension($mimeRepo->findType($first));
-        $forSecond = $mimeRepo->findExtension($mimeRepo->findType($second));
-
-        return $forFirst === $forSecond;
     }
 }

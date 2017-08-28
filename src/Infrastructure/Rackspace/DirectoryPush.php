@@ -56,14 +56,6 @@ class DirectoryPush extends DirectorySync
     }
 
     /**
-     * @param ResourceIterator $remoteFiles
-     */
-    public function setRemoteFiles(ResourceIterator $remoteFiles)
-    {
-        $this->remoteFiles = $remoteFiles;
-    }
-
-    /**
      * @param Container $container
      */
     public function setContainer(Container $container)
@@ -77,6 +69,14 @@ class DirectoryPush extends DirectorySync
     public function setTargetDir($dir)
     {
         $this->targetDir = rtrim($dir, '/');
+    }
+
+    /**
+     * @param ResourceIterator $remoteFiles
+     */
+    public function setRemoteFiles(ResourceIterator $remoteFiles)
+    {
+        $this->remoteFiles = $remoteFiles;
     }
 
     /**

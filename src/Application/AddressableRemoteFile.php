@@ -13,16 +13,6 @@ class AddressableRemoteFile
         $this->relative = $relative;
     }
 
-    public function getContextFolder()
-    {
-        return array_get($this->context, 'context_folder');
-    }
-
-    public function fullRelative()
-    {
-        return trim($this->getContextFolder() . '/' . $this->relative, '/');
-    }
-
     public function fullUrl()
     {
         return $this->getContextBaseAddress() . '/' . $this->fullRelative();
@@ -33,6 +23,16 @@ class AddressableRemoteFile
         $base = trim(array_get($this->context, 'driver_base_address', ''), '/');
 
         return $base;
+    }
+
+    public function fullRelative()
+    {
+        return trim($this->getContextFolder() . '/' . $this->relative, '/');
+    }
+
+    public function getContextFolder()
+    {
+        return array_get($this->context, 'context_folder');
     }
 
     public function getContextName()

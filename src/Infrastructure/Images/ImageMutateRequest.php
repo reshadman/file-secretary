@@ -26,14 +26,6 @@ class ImageMutateRequest
         $this->image = $image;
     }
 
-    /**
-     * @return Image
-     */
-    public function image()
-    {
-        return $this->image;
-    }
-
     public static function fromImageContent($image)
     {
         /** @var ImageManager $im */
@@ -42,6 +34,14 @@ class ImageMutateRequest
         $image = $im->make($image);
 
         return new self($image);
+    }
+
+    /**
+     * @return Image
+     */
+    public function image()
+    {
+        return $this->image;
     }
 
     /**

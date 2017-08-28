@@ -34,7 +34,7 @@ class TemplateManager
 
         // If template is not in out array list
         // we will throw an exception.
-        if (!$this->templateExists($templateName)) {
+        if ( ! $this->templateExists($templateName)) {
             throw new \InvalidArgumentException('No template with given name provided.');
         }
 
@@ -51,17 +51,17 @@ class TemplateManager
             return $instance;
         }
 
-        if (!isset($template['class'])) {
+        if ( ! isset($template['class'])) {
             throw new \InvalidArgumentException('No [class] key given for template meta.');
         }
 
         $instance = new $template['class'];
-        if (!$instance instanceof DynamicTemplateInterface) {
+        if ( ! $instance instanceof DynamicTemplateInterface) {
             return $instance;
         }
 
         // If there is no args given we will throw an exception.
-        if (!isset($template['args']) || !is_array($template['args'])) {
+        if ( ! isset($template['args']) || ! is_array($template['args'])) {
             throw new \InvalidArgumentException("You have not set [args] key for dynamic template array.");
         }
 
@@ -75,12 +75,6 @@ class TemplateManager
         return $this->availableTemplates;
     }
 
-    public function appendToAvailableTemplates(array $template)
-    {
-        $this->availableTemplates[] = $template;
-        return $this;
-    }
-
     public function setAvailableTemplates(array $templates)
     {
         $this->availableTemplates = $templates;
@@ -89,5 +83,11 @@ class TemplateManager
     public function templateExists($template)
     {
         return array_key_exists($template, $this->getAvailableTemplates());
+    }
+
+    public function appendToAvailableTemplates(array $template)
+    {
+        $this->availableTemplates[] = $template;
+        return $this;
     }
 }

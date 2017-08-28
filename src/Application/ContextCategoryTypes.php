@@ -9,6 +9,11 @@ class ContextCategoryTypes
     const TYPE_ASSET = 'asset';
     const TYPE_MANIPULATED_IMAGE = 'manipulated_image';
 
+    public static function exists($category)
+    {
+        return in_array($category, static::getAll());
+    }
+
     public static function getAll()
     {
         return [
@@ -17,10 +22,5 @@ class ContextCategoryTypes
             static::TYPE_BASIC_FILE,
             static::TYPE_ASSET
         ];
-    }
-
-    public static function exists($category)
-    {
-        return in_array($category, static::getAll());
     }
 }

@@ -12,6 +12,12 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class PresentedFile
 {
+    const FILE_TYPE_URL = 'url';
+    const FILE_TYPE_CONTENT = 'content';
+    const FILE_TYPE_INSTANCE = 'instance';
+    const FILE_TYPE_PATH = 'path';
+    const FILE_TYPE_BASE64 = 'base64';
+    const MAIN_IMAGE_NAME = 'main';
     private static $mimeDb;
     /**
      * @var File|mixed
@@ -23,15 +29,6 @@ class PresentedFile
     private $newPath;
     private $uuid;
     private $payload;
-
-    const FILE_TYPE_URL = 'url';
-    const FILE_TYPE_CONTENT = 'content';
-    const FILE_TYPE_INSTANCE = 'instance';
-    const FILE_TYPE_PATH = 'path';
-    const FILE_TYPE_BASE64 = 'base64';
-
-    const MAIN_IMAGE_NAME = 'main';
-
     /**
      * @var null
      */
@@ -60,86 +57,6 @@ class PresentedFile
     }
 
     /**
-     * The generic file instance
-     *
-     * @return File
-     */
-    public function getFileInstance()
-    {
-        return $this->getResolvedFile();
-    }
-
-    /**
-     * Get file type
-     *
-     * @return string
-     */
-    public function getFileFileType()
-    {
-        return $this->fileType;
-    }
-
-    /**
-     * Get guessed file mime extension.
-     *
-     * @return null|string
-     */
-    public function getMimeType()
-    {
-        return $this->getResolvedFile()->getMimeType();
-    }
-
-    /**
-     * Get file name including the extension
-     *
-     * @param bool $ext
-     * @return string
-     */
-    public function getFileName($ext = true)
-    {
-        return $this->getUuid() . ($ext ? ($this->getFileExtension() ? ('.' . $this->getFileExtension()) : '') : '');
-    }
-
-    /**
-     * Get file extension
-     *
-     * @return null|string
-     */
-    public function getFileExtension()
-    {
-        $mime = $this->getFileInstance()->getMimeType();
-
-        if (empty($mime)) {
-            return $this->getOriginalNameExtension();
-        }
-
-        if (Str::startsWith($mime, 'text/') && $this->originalName !== null) {
-            return $this->getOriginalNameExtension();
-        }
-
-        return self::getMimeDb()->findExtension($mime);
-    }
-
-    /**
-     * Is for given file type.
-     *
-     * @param $fileType
-     * @return bool
-     */
-    protected function isFileType($fileType)
-    {
-        return $this->getFileFileType() === $fileType;
-    }
-
-    /**
-     * @return Filesystem
-     */
-    protected function getNativeFilesInstance()
-    {
-        return app(Filesystem::class);
-    }
-
-    /**
      * Resolve given file to the proper instance
      *
      * @return void
@@ -148,7 +65,7 @@ class PresentedFile
     {
         if ($this->isFileType(static::FILE_TYPE_INSTANCE)) {
             $path = $this->file->getPath();
-            $this->fileContents = function () use($path) {
+            $this->fileContents = function () use ($path) {
                 return $this->getNativeFilesInstance()->get($path);
             };
             return;
@@ -173,9 +90,38 @@ class PresentedFile
         }
 
         $url = $this->file;
-        $this->file = function () use($url) {
+        $this->file = function () use ($url) {
             return new File($this->downloadFile($url));
         };
+    }
+
+    /**
+     * Is for given file type.
+     *
+     * @param $fileType
+     * @return bool
+     */
+    protected function isFileType($fileType)
+    {
+        return $this->getFileFileType() === $fileType;
+    }
+
+    /**
+     * Get file type
+     *
+     * @return string
+     */
+    public function getFileFileType()
+    {
+        return $this->fileType;
+    }
+
+    /**
+     * @return Filesystem
+     */
+    protected function getNativeFilesInstance()
+    {
+        return app(Filesystem::class);
     }
 
     /**
@@ -218,11 +164,21 @@ class PresentedFile
             'sink' => $stream
         ]);
 
-        $this->fileContents = function () use($response, $stream) {
+        $this->fileContents = function () use ($response, $stream) {
             return $response->getBody()->getContents();
         };
 
         return $path;
+    }
+
+    /**
+     * Get guessed file mime extension.
+     *
+     * @return null|string
+     */
+    public function getMimeType()
+    {
+        return $this->getResolvedFile()->getMimeType();
     }
 
     /**
@@ -235,45 +191,6 @@ class PresentedFile
         }
 
         return $this->file;
-    }
-
-    public function getFileContents()
-    {
-        $this->getFileInstance();
-
-        if ($this->fileContents instanceof \Closure) {
-            $this->fileContents = call_user_func($this->fileContents);
-        }
-
-        return $this->fileContents;
-    }
-
-    /**
-     * @return MimeDbRepository
-     */
-    private static function getMimeDb()
-    {
-        if (null === self::$mimeDb) {
-            self::$mimeDb = app(MimeDbRepository::class);
-        }
-
-        return self::$mimeDb;
-    }
-
-    private function getOriginalNameExtension()
-    {
-        $ext = explode('.', $this->originalName);
-
-        if (empty($ext)) {
-            return null;
-        }
-
-        return array_pop($ext);
-    }
-
-    public function getContext()
-    {
-        return $this->context;
     }
 
     /**
@@ -294,6 +211,16 @@ class PresentedFile
         return app(FileSecretaryManager::class);
     }
 
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    public function getFullDriverPath()
+    {
+        return $this->getSecretaryManager()->getContextStartingPath($this->getContext()) . '/' . $this->getNewPath();
+    }
+
     public function getNewPath()
     {
         if ($this->newPath !== null) {
@@ -305,7 +232,7 @@ class PresentedFile
         $ext = $this->getFileExtension();
 
         if ($ext) {
-            $ext = '.' .$ext;
+            $ext = '.' . $ext;
         } else {
             $ext = '';
         }
@@ -318,7 +245,7 @@ class PresentedFile
             }
             $newPath = $uuid . '/' . $this->getImageName(static::MAIN_IMAGE_NAME . $ext);
         } elseif ($contextData['category'] === ContextCategoryTypes::TYPE_BASIC_FILE) {
-            $newPath = $uuid . $ext ;
+            $newPath = $uuid . $ext;
         } else {
             throw new \ErrorException("Context category is not supported.");
         }
@@ -326,16 +253,6 @@ class PresentedFile
         $this->newPath = $newPath;
 
         return $this->newPath;
-    }
-
-    public function getFullDriverPath()
-    {
-        return $this->getSecretaryManager()->getContextStartingPath($this->getContext()) . '/' . $this->getNewPath();
-    }
-
-    public function getContextData()
-    {
-        return $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
     }
 
     public function getUuid()
@@ -347,9 +264,103 @@ class PresentedFile
         return $this->uuid = $this->getSecretaryManager()->getConfig("file_name_generator")($this);
     }
 
+    /**
+     * Get file extension
+     *
+     * @return null|string
+     */
+    public function getFileExtension()
+    {
+        $mime = $this->getFileInstance()->getMimeType();
+
+        if (empty($mime)) {
+            return $this->getOriginalNameExtension();
+        }
+
+        if (Str::startsWith($mime, 'text/') && $this->originalName !== null) {
+            return $this->getOriginalNameExtension();
+        }
+
+        return self::getMimeDb()->findExtension($mime);
+    }
+
+    /**
+     * The generic file instance
+     *
+     * @return File
+     */
+    public function getFileInstance()
+    {
+        return $this->getResolvedFile();
+    }
+
+    private function getOriginalNameExtension()
+    {
+        $ext = explode('.', $this->originalName);
+
+        if (empty($ext)) {
+            return null;
+        }
+
+        return array_pop($ext);
+    }
+
+    /**
+     * @return MimeDbRepository
+     */
+    private static function getMimeDb()
+    {
+        if (null === self::$mimeDb) {
+            self::$mimeDb = app(MimeDbRepository::class);
+        }
+
+        return self::$mimeDb;
+    }
+
+    protected static function contextCategoryIsForImages($category)
+    {
+        return in_array($category, [ContextCategoryTypes::TYPE_IMAGE, ContextCategoryTypes::TYPE_MANIPULATED_IMAGE]);
+    }
+
+    /**
+     * @param $default
+     * @return string
+     */
+    protected function getImageName($default)
+    {
+        $payload = $this->getPayload();
+
+        if ( ! is_array($this->payload)) {
+            return $default;
+        }
+
+        return array_get($payload, 'image_template_name', $default);
+    }
+
+    public function getPayload()
+    {
+        return $this->payload;
+    }
+
+    public function getContextData()
+    {
+        return $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
+    }
+
     public function getOriginalName($fallback = true)
     {
         return $this->originalName ?: ($fallback ? $this->getFileName() : null);
+    }
+
+    /**
+     * Get file name including the extension
+     *
+     * @param bool $ext
+     * @return string
+     */
+    public function getFileName($ext = true)
+    {
+        return $this->getUuid() . ($ext ? ($this->getFileExtension() ? ('.' . $this->getFileExtension()) : '') : '');
     }
 
     public function getSiblingFolder()
@@ -375,6 +386,17 @@ class PresentedFile
         return md5($this->getFileContents());
     }
 
+    public function getFileContents()
+    {
+        $this->getFileInstance();
+
+        if ($this->fileContents instanceof \Closure) {
+            $this->fileContents = call_user_func($this->fileContents);
+        }
+
+        return $this->fileContents;
+    }
+
     public function getSha1Hash()
     {
         return sha1($this->getFileContents());
@@ -387,33 +409,8 @@ class PresentedFile
         return array_get($contextData, 'category');
     }
 
-    public function getPayload()
-    {
-        return $this->payload;
-    }
-
     public function getPayloadByKey()
     {
         return array_get($this->getPayload(), 'client_ip');
-    }
-
-    /**
-     * @param $default
-     * @return string
-     */
-    protected function getImageName($default)
-    {
-        $payload = $this->getPayload();
-
-        if (!is_array($this->payload)) {
-            return $default;
-        }
-
-        return array_get($payload, 'image_template_name', $default);
-    }
-
-    protected static function contextCategoryIsForImages($category)
-    {
-        return in_array($category, [ContextCategoryTypes::TYPE_IMAGE, ContextCategoryTypes::TYPE_MANIPULATED_IMAGE]);
     }
 }

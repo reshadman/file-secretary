@@ -28,7 +28,7 @@ class DeleteTrackedFile
      */
     public function execute($fileUuidOrInstance, $onDelete = DeleteTrackedFile::ON_DELETE_DELETE_REMOTE)
     {
-        if (!is_object($fileUuidOrInstance)) {
+        if ( ! is_object($fileUuidOrInstance)) {
             $model = $this->fManager->getPersistModel();
             $fileUuidOrInstance = $model->where('uuid', $fileUuidOrInstance)->firstOrFail();
         }
@@ -48,7 +48,7 @@ class DeleteTrackedFile
                     ->where('uuid', '=', $fileUuidOrInstance->getFileableUuid())
                     ->exists();
 
-                if (!$exists) {
+                if ( ! $exists) {
                     $delete();
                 }
                 break;

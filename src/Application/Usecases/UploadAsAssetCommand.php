@@ -56,7 +56,8 @@ class UploadAsAssetCommand
         /** @var FilesystemAdapter $driver */
         $driver = $this->secretaryManager->getContextDriver($tagData['context']);
 
-        $newVersionPath = '/' . $this->secretaryManager->getAssetStartingPath($tagData['context'], $assetTag) . '/' . $uniqueName = time();
+        $newVersionPath = '/' . $this->secretaryManager->getAssetStartingPath($tagData['context'],
+                $assetTag) . '/' . $uniqueName = time();
 
         $this->events->fire(new BeforeAssetUpload($assetTag, $uniqueName));
 
@@ -70,7 +71,7 @@ class UploadAsAssetCommand
                 $newVersionPath
             )->execute();
         } else {
-            foreach($this->nativeFiles->allFiles($tagData['path']) as $file) {
+            foreach ($this->nativeFiles->allFiles($tagData['path']) as $file) {
 
                 $append = $this->secretaryManager->replaceFirst($tagData['path'], '', $file);
 

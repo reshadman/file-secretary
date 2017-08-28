@@ -30,6 +30,11 @@ class EloquentPersistedFile extends Model implements PersistableFile
         parent::__construct($attributes);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+    }
+
     /**
      * The unique identifier think of it as PK
      *
@@ -144,11 +149,6 @@ class EloquentPersistedFile extends Model implements PersistableFile
         return $this['category'];
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-    }
-
     /**
      * @param $query
      * @param $md5
@@ -157,7 +157,7 @@ class EloquentPersistedFile extends Model implements PersistableFile
      */
     public function scopeHashIs(Builder $query, $md5, $sha1)
     {
-        return $query->where(function (Builder $q) use($md5, $sha1) {
+        return $query->where(function (Builder $q) use ($md5, $sha1) {
             return $q->where('file_hash', $md5)->where('file_ensured_hash', $sha1);
         });
     }

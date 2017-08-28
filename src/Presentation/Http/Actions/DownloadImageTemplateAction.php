@@ -4,8 +4,8 @@ namespace Reshadman\FileSecretary\Presentation\Http\Actions;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
-use Reshadman\FileSecretary\Application\Usecases\MakeAndStoreImage;
 use Reshadman\FileSecretary\Application\PresentedFile;
+use Reshadman\FileSecretary\Application\Usecases\MakeAndStoreImage;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 
 class DownloadImageTemplateAction extends Controller
@@ -100,7 +100,7 @@ class DownloadImageTemplateAction extends Controller
         // We are gonna find the main file by iterating through the available
         // files in the sibling folder.
         $mainPath = null;
-        foreach($driver->files($starting) as $filePath) {
+        foreach ($driver->files($starting) as $filePath) {
             $basename = basename($filePath);
 
             if (Str::startsWith($basename, [PresentedFile::MAIN_IMAGE_NAME])) {
