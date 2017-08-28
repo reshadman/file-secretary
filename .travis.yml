@@ -16,7 +16,6 @@ env:
 before_script:
   - travis_retry composer self-update
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-source
-  - cp phpunit.xml.dist phpunit.xml
 
 script:
-  - vendor/bin/phpunit --debug
+  - vendor/bin/phpunit --debug -c phpunit.xml.dist
