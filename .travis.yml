@@ -4,6 +4,10 @@ php:
   - 7.0
   - 7.1
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install sqlite3
+
 env:
   matrix:
     - COMPOSER_FLAGS="--prefer-lowest"
