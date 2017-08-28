@@ -213,6 +213,9 @@ tests do as the following:
  2. Use more semantic names for features, class names and methods names.
  3. Make the tracking, eloquent independent.
  4. Refactor the code both for design and performance.
+ 5. In a new release, use a polymorphic model for database tracked files which allows
+ to indicate that whether a file has been used somewhere in the other models or not.
+  Which in result we can delete unused tracked files. This also works only with SQL databases.
 
 ### About the package
 This package has been extracted from [*jobinja.ir - The leading job board and career platform in Iran*](https://jobinja.ir),
