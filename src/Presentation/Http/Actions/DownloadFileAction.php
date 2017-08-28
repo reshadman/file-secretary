@@ -192,7 +192,7 @@ class DownloadFileAction extends Controller
      * @param PrivacyCheckNeeds $needs
      * @param $context
      * @param $headers
-     * @return mixed
+     * @return array
      */
     protected function mutateHeaders(PrivacyCheckNeeds $needs, $context, $headers)
     {

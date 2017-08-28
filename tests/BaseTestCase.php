@@ -42,7 +42,7 @@ class BaseTestCase extends TestCase
         return $app;
     }
 
-    protected function deleteAllFiles(): void
+    protected function deleteAllFiles()
     {
         /** @var FilesystemManager $fileManager */
         $fileManager = app(FilesystemManager::class);
@@ -58,7 +58,7 @@ class BaseTestCase extends TestCase
     public function tearDown()
     {
         $this->deleteAllFiles();
-        
+
         parent::tearDown();
     }
 }
