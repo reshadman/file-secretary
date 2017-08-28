@@ -8,14 +8,9 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install sqlite3
 
-env:
-  matrix:
-    - COMPOSER_FLAGS="--prefer-lowest"
-    - COMPOSER_FLAGS=""
-
 before_script:
   - travis_retry composer self-update
-  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-source
+  - travis_retry composer update --prefer-dist --no-interaction --prefer-stable
 
 script:
   - vendor/bin/phpunit --debug -c phpunit.xml.dist
