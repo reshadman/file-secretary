@@ -16,7 +16,7 @@
     </testsuites>
     <php>
         <env name="APP_ENV" value="testing"/>
-        <env name="APP_KEY" value=""/>
+        <env name="APP_KEY" value="SOME_KEY"/>
         <!--
             Two rackspace containers one public and one private
             If you want to use anything other Rackspace file system driver
