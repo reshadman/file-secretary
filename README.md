@@ -25,9 +25,9 @@ Get rid of anything related to files in Laravel, This package handles all for yo
 
 ## Getting Started
 
+ - [Does this package fit my needs?](#does-this-package-fit-my-needs?)
  - [Installation](#installation)
  - [Configuration](#configuration)
- - [Does this package fit my needs?](#does-this-package-fit-my-needs?)
  - [Usage](#usage)
     - [Terminology](Terminology) : read for faster understanding.
     - [Files, Images and Static Assets](#files,-images-and-static-assets)
