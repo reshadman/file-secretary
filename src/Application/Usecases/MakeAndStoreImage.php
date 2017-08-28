@@ -45,7 +45,7 @@ class MakeAndStoreImage
 
             // Store it in the cloud.
             $storeResponse = $this->storeFile->execute(new PresentedFile(
-                $storeManipulated,
+                is_bool($storeManipulated) ? $context : $storeManipulated,
                 $response->image(),
                 PresentedFile::FILE_TYPE_CONTENT,
                 null,

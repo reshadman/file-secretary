@@ -77,7 +77,7 @@ class FileSecretaryManager
                 throw new \InvalidArgumentException("The context name can not be an integer.");
             }
 
-            $contextFolder = array_get($context, "context", '');
+            $contextFolder = array_get($context, "context_folder", '');
 
             if ( ! is_string($contextFolder)) {
                 throw new \InvalidArgumentException("The context folder should be an string or null");
@@ -89,7 +89,7 @@ class FileSecretaryManager
                 throw new \InvalidArgumentException("Driver name must be string");
             }
 
-            $driverBaseAddress = array_get($config, "driver_base_address", '');
+            $driverBaseAddress = array_get($context, "driver_base_address", '');
 
             if ( ! is_string($driverBaseAddress) && $driverBaseAddress !== null) {
                 throw new \InvalidArgumentException("Driver base address should be string.");

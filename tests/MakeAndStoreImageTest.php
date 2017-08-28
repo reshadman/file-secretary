@@ -144,4 +144,28 @@ class MakeAndStoreImageTest extends BaseTestCase
 
         $this->assertNull($response->getRemoteFile());
     }
+
+    public function testStoresInAnotherContextIfConfigSaysTo()
+    {
+        $this->remoteFile = $this->store->execute(new PresentedFile(
+            "images_public",
+            $this->imageToStore,
+            PresentedFile::FILE_TYPE_PATH,
+            "logo.png",
+            [
+                'uuid' => $this->uuid = Uuid::uuid4()->toString()
+            ]
+        ));
+
+        $imageable = file_get_contents(__DIR__ . '/../stub/logo.jpg');
+
+        /** @var MakeAndStoreImage $store */
+        $store = app(MakeAndStoreImage::class);
+
+        $uuid = $this->uuid;
+
+        $response = $store->execute("images_public", $uuid, $imageable, "companies_logo_200x200", "jpg");
+
+        $this->assertNull($response->getRemoteFile());
+    }
 }
