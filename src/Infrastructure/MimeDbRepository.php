@@ -12,7 +12,7 @@ class MimeDbRepository extends BaseMimeDbRepository
 
         return FileSecretaryManager::normalizeExtension($found);
     }
-    
+
     public function findType($extension)
     {
         // Get all matching extensions.
