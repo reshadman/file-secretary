@@ -23,7 +23,7 @@ Get rid of anything related to files in Laravel, This package handles all for yo
  You can implement your own access control for restricting access on request.
  So for instance if the file should be only served to its uploader, you can implement an access controller which checks that the requested file is attached to the user model or not.
 
-##Getting Started
+## Getting Started
 
  - [Installation](#installation)
  - [Configuration](#configuration)
@@ -73,14 +73,14 @@ Get rid of anything related to files in Laravel, This package handles all for yo
     - [Production Notes](#production-notes)
         - [Best Practices](#best-practices)
         - [Nginx Directives](#nginx-directives)
-    - [Limitations](#limitations)
+  - [Limitations](#limitations)
     
-###Installation
+### Installation
 ```bash
 composer require reshadman/file-secretary 1.*
 ```
 
-####Add the Service Provider to app.php
+#### Add the Service Provider to app.php
 ```php
 <?php
 return [
