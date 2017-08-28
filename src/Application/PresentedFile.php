@@ -17,7 +17,9 @@ class PresentedFile
     const FILE_TYPE_INSTANCE = 'instance';
     const FILE_TYPE_PATH = 'path';
     const FILE_TYPE_BASE64 = 'base64';
-    const MAIN_IMAGE_NAME = 'main';
+
+    const MAIN_IMAGE_NAME = '1_main';
+
     private static $mimeDb;
     /**
      * @var File|mixed

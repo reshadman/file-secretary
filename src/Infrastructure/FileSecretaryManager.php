@@ -299,4 +299,21 @@ class FileSecretaryManager
 
         return $model;
     }
+
+    /**
+     * Get parent context.
+     *
+     * @param $contextName
+     * @return string
+     */
+    public function getManipulatedImageParentContext($contextName)
+    {
+        foreach ($this->getConfig("contexts") as $parentContextName => $context) {
+            if ($context['store_manipulated'] === $contextName) {
+                return $parentContextName;
+            }
+        }
+
+        throw new \InvalidArgumentException("Context has not parent.");
+    }
 }

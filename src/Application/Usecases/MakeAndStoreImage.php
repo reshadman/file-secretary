@@ -29,7 +29,7 @@ class MakeAndStoreImage
      *
      * @param $context
      * @param $uuid
-     * @param $imageable
+     * @param string $imageable
      * @param $template
      * @param null $extension
      * @return MakeAndStoreImageResponse
@@ -41,11 +41,11 @@ class MakeAndStoreImage
 
         $storeManipulated = $this->fManager->getConfig("contexts.{$context}.store_manipulated", true);
 
-        if ($storeManipulated) {
+        if (is_bool($storeManipulated) && $storeManipulated) {
 
             // Store it in the cloud.
             $storeResponse = $this->storeFile->execute(new PresentedFile(
-                is_bool($storeManipulated) ? $context : $storeManipulated,
+                $context,
                 $response->image(),
                 PresentedFile::FILE_TYPE_CONTENT,
                 null,
