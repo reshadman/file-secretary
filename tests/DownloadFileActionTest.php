@@ -1,11 +1,9 @@
 <?php
 
-namespace FileSecretaryTests\Actions;
+namespace FileSecretaryTests;
 
-use FileSecretaryTests\BaseTestCase;
 use Reshadman\FileSecretary\Application\AddressableRemoteFile;
 use Reshadman\FileSecretary\Application\PresentedFile;
-use Reshadman\FileSecretary\Application\Privacy\PublicPrivacy;
 use Reshadman\FileSecretary\Application\Usecases\StoreFile;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -207,7 +205,7 @@ class DownloadFileActionTest extends BaseTestCase
 
         $r = $store->execute($p = new PresentedFile(
             $context,
-            __DIR__ . '/../../stub/logo.jpg',
+            __DIR__ . '/../stub/logo.jpg',
             PresentedFile::FILE_TYPE_PATH
         ));
 

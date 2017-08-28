@@ -15,17 +15,7 @@ class BaseTestCase extends TestCase
     public function setUp()
     {
         parent::setUp();
-
-
-        /** @var FilesystemManager $fileManager */
-        $fileManager = app(FilesystemManager::class);
-
-        foreach (config('filesystems.disks') as $disk => $diskConfig) {
-            $fileManager->disk($disk)->delete($fileManager->disk($disk)->allFiles());
-            foreach ($fileManager->disk($disk)->directories('/') as $dir) {
-                $fileManager->disk($disk)->deleteDirectory($dir);
-            }
-        }
+        $this->deleteAllFiles();
     }
 
     protected function getPackageProviders($app)
@@ -50,5 +40,25 @@ class BaseTestCase extends TestCase
         $app->bind('Illuminate\Foundation\Bootstrap\LoadConfiguration', LoadConfiguration::class);
 
         return $app;
+    }
+
+    protected function deleteAllFiles(): void
+    {
+        /** @var FilesystemManager $fileManager */
+        $fileManager = app(FilesystemManager::class);
+
+        foreach (config('filesystems.disks') as $disk => $diskConfig) {
+            $fileManager->disk($disk)->delete($fileManager->disk($disk)->allFiles());
+            foreach ($fileManager->disk($disk)->directories('/') as $dir) {
+                $fileManager->disk($disk)->deleteDirectory($dir);
+            }
+        }
+    }
+
+    public function tearDown()
+    {
+        $this->deleteAllFiles();
+        
+        parent::tearDown();
     }
 }
