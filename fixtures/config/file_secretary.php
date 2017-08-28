@@ -158,7 +158,7 @@
             'context_folder' => 'images3',
             'store_manipulated' => 'manipulated_images_context',
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
-            'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
+            'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
         ],
 
         'manipulated_images_context' => [

@@ -6,11 +6,28 @@ use FileSecretaryTests\Overrides\Application;
 use FileSecretaryTests\Overrides\ConsoleKernel;
 use FileSecretaryTests\Overrides\LoadConfiguration;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Filesystem\FilesystemManager;
 use Orchestra\Testbench\TestCase;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider;
 
 class BaseTestCase extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+
+
+        /** @var FilesystemManager $fileManager */
+        $fileManager = app(FilesystemManager::class);
+
+        foreach (config('filesystems.disks') as $disk => $diskConfig) {
+            $fileManager->disk($disk)->delete($fileManager->disk($disk)->allFiles());
+            foreach ($fileManager->disk($disk)->directories('/') as $dir) {
+                $fileManager->disk($disk)->deleteDirectory($dir);
+            }
+        }
+    }
+
     protected function getPackageProviders($app)
     {
         return [FileSecretaryServiceProvider::class];

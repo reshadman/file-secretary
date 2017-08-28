@@ -362,7 +362,17 @@ class PresentedFile
      */
     public function getFileName($ext = true)
     {
-        return $this->getUuid() . ($ext ? ($this->getFileExtension() ? ('.' . $this->getFileExtension()) : '') : '');
+        $ext = ($ext ? ($this->getFileExtension() ? ('.' . $this->getFileExtension()) : '') : '');
+        $category = $this->getContextData()['category'];
+
+        if (
+            $category === ContextCategoryTypes::TYPE_MANIPULATED_IMAGE ||
+            $category === ContextCategoryTypes::TYPE_IMAGE
+        ) {
+            return $this->getImageName(static::MAIN_IMAGE_NAME . $ext);
+        }
+
+        return $this->getUuid() . $ext;
     }
 
     public function getSiblingFolder()

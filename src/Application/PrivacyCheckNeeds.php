@@ -28,10 +28,10 @@ class PrivacyCheckNeeds
 
         if (count($extension) > 1) {
             $this->fileExtension = array_pop($extension);
-            $relativePath = implode('.', $relativePath);
+            $relativePath = implode('.', $extension);
         }
 
-        $relativePath = trim($relativePath, ['/', DIRECTORY_SEPARATOR]);
+        $relativePath = trim($relativePath, '/');
 
         $exploded = explode('/', $relativePath);
 

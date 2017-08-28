@@ -123,6 +123,7 @@ class FileSecretaryManager
                     }
 
                     $config['contexts'][$manipulated]['category'] = ContextCategoryTypes::TYPE_MANIPULATED_IMAGE;
+                    $config['contexts'][$manipulated]['privacy'] = $context['privacy'];
 
                     $usedManipulated[$manipulated] = true;
                 }
@@ -309,7 +310,7 @@ class FileSecretaryManager
     public function getManipulatedImageParentContext($contextName)
     {
         foreach ($this->getConfig("contexts") as $parentContextName => $context) {
-            if ($context['store_manipulated'] === $contextName) {
+            if (array_get($context, 'store_manipulated') === $contextName) {
                 return $parentContextName;
             }
         }

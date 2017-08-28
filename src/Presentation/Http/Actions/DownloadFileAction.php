@@ -63,10 +63,16 @@ class DownloadFileAction extends Controller
         /** @var PrivacyCheckNeeds $privacyNeeds */
         $privacyNeeds = $this->request->input(PrivacyCheckMiddleware::REQUEST_PARAM_KEY);
 
+        if (!$privacyNeeds instanceof PrivacyCheckNeeds) {
+            throw new \LogicException("The privacy check middleware should be wrapped around this route.");
+        }
+
         $contextData = $this->secretaryManager->getContextData($privacyNeeds->getContextName());
 
         switch ($contextData['category']) {
+
             case ContextCategoryTypes::TYPE_IMAGE:
+
                 return $this->downloadImage($privacyNeeds);
             case ContextCategoryTypes::TYPE_MANIPULATED_IMAGE:
                 return $this->downloadTemplate($privacyNeeds);
@@ -75,7 +81,7 @@ class DownloadFileAction extends Controller
                 return $this->downloadFile($privacyNeeds);
 
             default:
-                throw new \InvalidArgumentException("The given context category is not supported for download.");
+                return abort(404);
         }
     }
 
@@ -88,13 +94,13 @@ class DownloadFileAction extends Controller
      */
     protected function downloadImage(PrivacyCheckNeeds $needs)
     {
-        if ($needs->getFileName() !== PresentedFile::MAIN_IMAGE_NAME) {
+        if ($needs->getFileName(false) !== PresentedFile::MAIN_IMAGE_NAME) {
             return $this->downloadTemplate($needs);
         }
 
         $folderStart = $this->secretaryManager->getContextStartingPath($needs->getContextName());
         $driver = $this->secretaryManager->getContextDriver($needs->getContextName());
-        $path =  $folderStart . '/' .$needs->getRelativePath();
+        $path = $folderStart . '/' . $needs->getRelativePath();
 
         $contents = $driver->get($path);
 
@@ -121,7 +127,6 @@ class DownloadFileAction extends Controller
     {
         $contextData = $this->secretaryManager->getContextData($needs->getContextName());
 
-        // This is equal for both manipulated context and image context
         $startingPath = $needs->getContextFolder() . '/' . $needs->getFileUuid() . '/';
 
         // If the context has manipulated image category we will find the "main"
@@ -129,34 +134,26 @@ class DownloadFileAction extends Controller
         if ($contextData['category'] === ContextCategoryTypes::TYPE_MANIPULATED_IMAGE) {
             $parentContext = $this->secretaryManager->getManipulatedImageParentContext($needs->getContextName());
             $searchDriver = $this->secretaryManager->getContextDriver($parentContext);
+            $startingPath = $this->secretaryManager->getContextStartingPath($parentContext) . '/' . $needs->getFileUuid() . '/';
         } else {
             $searchDriver = $this->secretaryManager->getContextDriver($needs->getContextName());
         }
 
-        $image = $this->mainImageFinder->find($searchDriver, $startingPath);
-
-        if ($image === null) {
+        if (($image = $this->mainImageFinder->find($searchDriver, $startingPath)) === null) {
             return abort(404);
         } else {
             $image = $searchDriver->get($image);
         }
 
         $response = $this->makeImage->execute(
-            $needs->getContextName(),
-            $needs->getFileUuid(),
-            $image,
-            $needs->getFileUuid(),
+            $needs->getContextName(), $needs->getFileUuid(),
+            $image, $needs->getFileName(false),
             $needs->getFileExtension()
         );
 
-        // Simply retrieve the content type from given image name.
-        $headers = [
-            'Content-Type' => $this->secretaryManager->getMimeForExtension(
-                $response->getMadeImageResponse()->extension()
-            )
-        ];
+        $mime = $this->secretaryManager->getMimeForExtension($response->getMadeImageResponse()->extension());
 
-        $headers = $this->mutateHeaders($needs, $needs->getContextName(), $headers);
+        $headers = $this->mutateHeaders($needs, $needs->getContextName(), ['Content-Type' => $mime]);
 
         return response($response->getMadeImageResponse()->image(), 200, $headers);
     }
@@ -174,7 +171,7 @@ class DownloadFileAction extends Controller
 
         $path = $this->secretaryManager->getContextStartingPath($context) . '/' . ($needs->getRelativePath());
 
-        if (!$driver->exists($path)) {
+        if ( ! $driver->exists($path)) {
             abort(404);
         }
 
