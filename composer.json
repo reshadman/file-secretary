@@ -1,6 +1,17 @@
 {
     "name": "reshadman/file-secretary",
     "description": "Get rid of anything related to files in Laravel, This package handles all for you. Anything we mean.",
+    "keywords": [
+        "jobinja",
+        "laravel",
+        "file",
+        "image",
+        "asset",
+        "resize",
+        "cloud",
+        "rackspace"
+    ],
+    "homepage": "https://github.com/reshadman/file-secretary",
     "type": "library",
     "require": {
         "laravel/framework": ">=5.1.0 <5.2.0",
