@@ -5,39 +5,93 @@
 Get rid of anything related to files in Laravel, This package handles all for you.
 
 ## What does this package do?
- 1. **Handles your public assets** (.css, .js, .etc) to be served through your 
- CDN provider.
- Unlike other solutions 
- there is no runtime i/o needed for retrieving the unique id needed for 
- cache purging on deploys.
+ 1. **Handles your public assets** (.css, .js, .etc) you can use your CDN provider to serve the static assets. with a simple function call. For instance you can serve your static files through Rackspace CDN. After each deploy a new unique id is assigned to the path so the cached assets would be purged.
  
- 2. **Handles all the image resizing needs** with simple configuration, 
- Images are generated on the fly
- for once, and are stored in your CDN provider, 
- They could be served without the participation of PHP
- all handled with a simple *nginx snippet* included in the package. 
+ 2. **Image manipulation and storage**: Store all of your images in the cloud (based on Laravel Adapters, Rackspace, S3, minio etc.), The image resizing is handled with simple configuration. You define templates and then images are generated automatically. Once a new image template created, you can use the nginx directives included in the package to remove the participation of PHP in next calls. Read the documentation for more info. A simple, fast and reliable method to manipulate images that are stored in the cloud.
  3. **Detects redundant files**, File names are generated based on the 
  filesize + a hash function.
  so redundant files could not exist technically, 
  You can implement your own file name generator, too.
- 4. **Handles basic files** with a simple method call. 
- They can be served without the participation of PHP. and can they can
- be addressed with the package's functions if they are public.
- 5. **Allows Database Tracking** (Optional), 
- you can use the eloquent model to relate files to your other models, easily.
- You can also implement your own eloquent model for more flexibility.
- 6. **Simple functions** for dealing with resizable image urls, file urls, 
+ 4. **Storing files** with a simple method call. 
+ They can be served without the participation of PHP, and they can
+ be addressed with the package's helper functions if they are public.
+ 5. **Database Tracking** (Optional), 
+ Centerialized Eloquent model which tracks your stored files(and images), You can store files/resiable-images and attach them to your bussiness models. Then you can use them. If it is an Image the templates are accessible by simple getters in the model.
+ 6. **Simple helper functions** for dealing with resizable image urls, file urls, 
  asset urls etc.
- 7. **A Simple controller for serving private/public files** can be used to 
- serve both resizable images, and basic files.
- You can implement your own access control for serving them based on config.
- 
-### Installation
+ 7. **A Simple controller for serving private/public files** Serve both resizable images, and files.
+ You can implement your own access control for restricting access on request.
+ So for instance if the file should be only served to its uploader, you can implement an access controller which checks that the requested file is attached to the user model or not.
+
+##Getting Started
+ - [Installation](#installation)
+ - [Configuration](#configuration)
+ - [Does this package fit my needs?](#does-this-package-fit-my-needs?)
+ - [Usage](#usage)
+    - [Terminology](Terminology) : read for faster understanding.
+    - [Files, Images and Static Assets](#files,-images-and-static-assets)
+    - [Using the asset uploader](#using-the-asset-uploader)
+        - [When to use](#when-to-use)
+        - [Asset folders](#asset-folders)
+        - [Asset's deploy unique id](#asset's-deploy-unique-id)
+        - [Deleting old deploys](#deleting-old-deploy-assets)
+        - [Addressing Assets](#addressing-assets)
+        - [Assets and the Racksapce adapter](#assets-and-the-rackspace-adapter)
+    - [Storing files](#storing-files)
+        - [File names](#file-names)
+        - [Storing files with file path](#storing-files-with-giving-path)
+        - [Storing files with content](#storing-files-with-content)
+        - [Storing files with Laravel file instance](#storing-files-with-laravel-file-instance)
+        - [Storing base64-encoded files](#storing-base-64-encoded-files)
+        - [Storing files from URL](#storing-files-from-url)
+        - [Stored file response](#stored-file-response)
+    - [Storing images](#storing-images)
+    - [Deleting files](#deleting-files)
+    - [Storing Eloquent-tracked files](#storing-eloquent-tracked-files)
+        - [When to use tracked files](#when-to-use-tracked-files)
+        - [Storing simple files](#storing-simple-files)
+        - [Storing manipulatable images](#storing-manipulatable-images)
+        - [Using your own model](#using-your-own-model)
+    - [Deleting Eloquent-tracked files](#deleting-eloquent-tracked-files)
+        - [Handle what happens on delete](#handle-what-happens-on-delete)
+    - [Manipulating images](#manipulating-images)
+        - [Image Templates](#image-templates)
+        - [Using the dynamic generic template](#using-the-dynamic-generic-template)
+        - [Writing your own template](#writing-your-own-template)
+        - [Storing manipulated images](#storing-manipulated-images)
+    - [Serving files](#serving-files)
+        - [Default Routes](#default-routes)
+        - [Serving simple files](#serving-simple-files)
+        - [Serving images](#serving-images)
+            - [Serving original images](#serving-original-images)
+            - [Serving manipulated images](#serving-manipulated-images)
+            - [Performance optimizations](#performance-optimizations)
+        - [Restricting access](#restricting-access)
+        - [Add your custom routes](#add-your-custom-routes)
+    - [Helper functions](#helper-functions)
+    - [Production Notes](#production-notes)
+        - [Best Practices](#best-practices)
+        - [Nginx Directives](#nginx-directives)
+    - [Limitations](#limitations)
+###Installation
 ```bash
 composer require reshadman/file-secretary 1.*
 ```
 
-### Publish config and migrations
+####Add the Service Provider to app.php
+```php
+<?php
+return [
+    // other app.php config elements
+    'providers' => [
+        // Other providers
+        // ...
+        \Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider::class    
+    ]  
+];
+```
+
+####Publish config and migrations
 To publish configuration:
 ```bash
 php artisqan vendor:publish \
@@ -55,7 +109,7 @@ php artisqan vendor:publish \
 ```
 
 ### Configuration
-For understanding how this package works please read the documentation
+Almost everything is handled by configuration, For understanding how this package works please read the documentation
 blocks in the default config file here:
 
 [config/file_secretary.php](https://github.com/reshadman/file-secretary/blob/master/fixtures/config/file_secretary.php)
