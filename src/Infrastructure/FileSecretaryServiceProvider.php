@@ -8,22 +8,33 @@ use Reshadman\FileSecretary\Infrastructure\Images\TemplateManager;
 
 class FileSecretaryServiceProvider extends ServiceProvider
 {
+    const PRODUCTION_ENV_NAME = 'production';
+
+    /**
+     * Boot.
+     *
+     * @param Dispatcher $dispatcher
+     */
     public function boot(Dispatcher $dispatcher)
     {
-        $this->publishes([
-            __DIR__ . '/../../fixtures/config/file_secretary.php' => config_path('file_secretary.php')
-        ], 'config');
+        if ($this->app->environment() !== static::PRODUCTION_ENV_NAME) {
+            $this->publishes([
+                __DIR__ . '/../../fixtures/config/file_secretary.php' => config_path('file_secretary.php')
+            ], 'config');
 
-        $this->publishes([
-            __DIR__ . '/../../'
-        ]);
+            $this->publishes([
+                __DIR__ . '/../../fixtures/migrations'
+            ], 'migrations');
+        }
 
-        $events = $this->app['config']->get('file_secretary.listen', []);
-
-        foreach ($events as $event => $listeners) {
+        foreach ($this->app['config']->get('file_secretary.listen', []) as $event => $listeners) {
             foreach ($listeners as $listener) {
                 $dispatcher->listen($event, $listener);
             }
+        }
+
+        if ( ! $this->app->routesAreCached() && $this->app['config']->get('file_secretary.load_routes', false)) {
+            require __DIR__ . '/../Presentation/Http/routes.php';
         }
     }
 
@@ -36,7 +47,7 @@ class FileSecretaryServiceProvider extends ServiceProvider
     {
         $config = $this->app['config']->get('file_secretary');
 
-        $this->app->singleton(FileSecretaryManager::class, function ($app) use($config) {
+        $this->app->singleton(FileSecretaryManager::class, function ($app) use ($config) {
 
             return new FileSecretaryManager($config, $app['filesystem']);
 

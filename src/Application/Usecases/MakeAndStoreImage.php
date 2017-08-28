@@ -42,9 +42,10 @@ class MakeAndStoreImage
         $storeManipulated = $this->fManager->getConfig("contexts.{$context}.store_manipulated", true);
 
         if ($storeManipulated) {
+
             // Store it in the cloud.
             $storeResponse = $this->storeFile->execute(new PresentedFile(
-                $context,
+                $storeManipulated,
                 $response->image(),
                 PresentedFile::FILE_TYPE_CONTENT,
                 null,

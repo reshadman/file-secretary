@@ -26,11 +26,18 @@ class DeleteFile
         $contextData = $this->secretaryManager->getContextData($context);
 
         if ($contextData['category'] === ContextCategoryTypes::TYPE_IMAGE) {
+            $storeManipulated = $this->secretaryManager->getConfig("contexts.{$context}.store_manipulated", true);
+
             $exploded = explode('.', $fullPath);
             array_pop($exploded);
             $exploded = explode('/', implode('', $exploded));
             array_pop($exploded);
-            $driver->deleteDirectory(implode('', $exploded));
+            $driver->deleteDirectory($dir = implode('', $exploded));
+
+            if (is_string($storeManipulated)) {
+                $manipulatedDriver = $this->secretaryManager->getContextDriver($storeManipulated);
+                $manipulatedDriver->deleteDirectory($dir);
+            }
         } else {
             $driver->delete($fullPath);
         }

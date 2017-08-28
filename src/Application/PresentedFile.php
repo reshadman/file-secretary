@@ -312,7 +312,7 @@ class PresentedFile
 
         $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
 
-        if ($contextData['category'] === ContextCategoryTypes::TYPE_IMAGE) {
+        if (static::contextCategoryIsForImages($contextData['category'])) {
             if ($ext === null) {
                 throw new \InvalidArgumentException("Can not store image without extension.");
             }
@@ -356,7 +356,7 @@ class PresentedFile
     {
         $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
 
-        if ($contextData['category'] === ContextCategoryTypes::TYPE_IMAGE) {
+        if (static::contextCategoryIsForImages($contextData['category'])) {
             return $this->getUuid();
         }
 
@@ -410,5 +410,10 @@ class PresentedFile
         }
 
         return array_get($payload, 'image_template_name', $default);
+    }
+
+    protected static function contextCategoryIsForImages($category)
+    {
+        return in_array($category, [ContextCategoryTypes::TYPE_IMAGE, ContextCategoryTypes::TYPE_MANIPULATED_IMAGE]);
     }
 }
