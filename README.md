@@ -1,4 +1,7 @@
 # Laravel File Secretary
+![Build Status](http://img.shields.io/travis/reshadman/file-secretary/master.png?style=flat-square)
+![Build Status](https://www.versioneye.com/user/projects/59a41045368b08003f172a41/badge.png?style=flat-square)
+
 Get rid of anything related to files in Laravel, This package handles all for you.
 
 ## What does this package do?

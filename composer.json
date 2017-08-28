@@ -6,7 +6,7 @@
         "laravel/framework": ">=5.1.0 <5.2.0",
         "ramsey/uuid": ">=3.7 <3.8.0",
         "guzzlehttp/guzzle": ">=6.3.0 <6.4.0",
-        "adrienrn/php-mimetyper": ">=0.2.0 <0.3.0",
+        "adrienrn/php-mimetyper": "0.2.0",
         "intervention/image": ">=2.4.0 <2.5.0"
     },
     "require-dev": {
