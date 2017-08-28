@@ -130,14 +130,15 @@
         'images_private' => [
             'driver' => 'private',
             'driver_base_address' => null,
-            'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
-            'category' => 'images',
+            'context_folder' => 'images_',
+            'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
         ],
 
         'images_public' => [
             'driver' => 'public',
-            'context_folder' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
+            'context_folder' => 'images',
+            'store_manipulated' => false, // false to not store manipulated images
             'driver_base_address' => 'https://images.jobinja.ir/',
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class

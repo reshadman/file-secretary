@@ -51,7 +51,7 @@ class MakeAndStoreImageTest extends BaseTestCase
         $this->store = app(StoreFile::class);
 
         $this->remoteFile = $this->store->execute(new PresentedFile(
-            "images_public",
+            "images_private",
             $this->imageToStore,
             PresentedFile::FILE_TYPE_PATH,
             "logo.png",
@@ -67,7 +67,7 @@ class MakeAndStoreImageTest extends BaseTestCase
 
         /** @var FileSecretaryManager $secManager */
         $this->secManager = app(FileSecretaryManager::class);
-        $this->contents = $this->secManager->getContextDriver("images_public")->get($this->remoteFile->fullRelative());
+        $this->contents = $this->secManager->getContextDriver("images_private")->get($this->remoteFile->fullRelative());
 
         $this->im = app(ImageManager::class);
 
@@ -82,13 +82,13 @@ class MakeAndStoreImageTest extends BaseTestCase
 
         $uuid = $this->uuid;
 
-        $response = $store->execute("images_public", $uuid, $imageable, "companies_logo_200x200", "jpg");
+        $response = $store->execute("images_private", $uuid, $imageable, "companies_logo_200x200", "jpg");
 
         $this->assertContains($this->uuid, $response->getRemoteFile()->fullRelative());
 
         $this->assertContains($this->im->make($imageable)->mime(), $this->im->make($response->getMadeImageResponse()->image())->mime());
 
-        $this->assertTrue($this->secManager->getContextDriver("images_public")->exists($response->getRemoteFile()->fullRelative()));
+        $this->assertTrue($this->secManager->getContextDriver("images_private")->exists($response->getRemoteFile()->fullRelative()));
     }
 
     public function testItThrowsExceptionWhenNoExceptionGiven()
@@ -102,7 +102,7 @@ class MakeAndStoreImageTest extends BaseTestCase
 
         $uuid = $this->uuid;
 
-        $store->execute("images_public", $uuid, $imageable, "companies_logo_200x200", null);
+        $store->execute("images_private", $uuid, $imageable, "companies_logo_200x200", null);
 
     }
 
@@ -117,6 +117,30 @@ class MakeAndStoreImageTest extends BaseTestCase
 
         $uuid = $this->uuid;
 
-        $store->execute("images_public", $uuid, $imageable, "companies_logo_200x200", 'png');
+        $store->execute("images_private", $uuid, $imageable, "companies_logo_200x200", 'png');
+    }
+
+    public function testDoesNotStoreIfConfigSays()
+    {
+        $this->remoteFile = $this->store->execute(new PresentedFile(
+            "images_public",
+            $this->imageToStore,
+            PresentedFile::FILE_TYPE_PATH,
+            "logo.png",
+            [
+                'uuid' => $this->uuid = Uuid::uuid4()->toString()
+            ]
+        ));
+
+        $imageable = file_get_contents(__DIR__ . '/../stub/logo.jpg');
+
+        /** @var MakeAndStoreImage $store */
+        $store = app(MakeAndStoreImage::class);
+
+        $uuid = $this->uuid;
+
+        $response = $store->execute("images_public", $uuid, $imageable, "companies_logo_200x200", "jpg");
+
+        $this->assertNull($response->getRemoteFile());
     }
 }

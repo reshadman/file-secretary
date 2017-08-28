@@ -17,6 +17,11 @@
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_KEY" value=""/>
+        <!--
+            Two rackspace containers one public and one private
+            If you want to use anything other Rackspace file system driver
+            You should change the fixtures/config/file_secretary.php
+        -->
         <env name="RS_PRIVATE_USER" value=""/>
         <env name="RS_PRIVATE_KEY" value=""/>
         <env name="RS_PRIVATE_CONTAINER" value=""/>
@@ -24,5 +29,11 @@
         <env name="RS_PUBLIC_USER" value=""/>
         <env name="RS_PUBLIC_KEY" value=""/>
         <env name="RS_PUBLIC_CONTAINER" value=""/>
+        <env name="DB_CONNECTION" value="testing"/>
+        <!-- In case of using anything other than sqlite in memory for testing, change database config and fill the following -->
+        <env name="DB_HOST" value=""/>
+        <env name="DB_DATABASE" value=""/>
+        <env name="DB_USERNAME" value=""/>
+        <env name="DB_PASSWORD" value=""/>
     </php>
 </phpunit>

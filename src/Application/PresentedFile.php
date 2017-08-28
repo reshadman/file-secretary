@@ -97,7 +97,7 @@ class PresentedFile
      */
     public function getFileName($ext = true)
     {
-        return $this->getFileInstance()->getBasename() . ($ext ? '.' . $this->getFileExtension() : '');
+        return $this->getUuid() . ($ext ? ($this->getFileExtension() ? ('.' . $this->getFileExtension()) : '') : '');
     }
 
     /**
@@ -207,7 +207,7 @@ class PresentedFile
     protected function downloadFile($file)
     {
         if (filter_var($file, FILTER_VALIDATE_URL) === false) {
-            throw new \InvalidArgumentException("The given file");
+            throw new \InvalidArgumentException("The given file is not a url path.");
         }
 
         $stream = $path = sys_get_temp_dir() . '/' . Uuid::uuid4()->toString();

@@ -15,6 +15,8 @@ class EloquentPersistedFile extends Model implements PersistableFile
 {
     use PersistableFileTrait;
 
+    protected $guarded = ['id'];
+
     /**
      * EloquentPersistedFile constructor.
      * @param array $attributes
@@ -22,7 +24,7 @@ class EloquentPersistedFile extends Model implements PersistableFile
     public function __construct(array $attributes = [])
     {
         if ($this->table === null) {
-            $this->table = config('file_secretary.eloquent.table_name');
+            $this->table = config('file_secretary.eloquent.table');
         }
 
         parent::__construct($attributes);
@@ -119,7 +121,7 @@ class EloquentPersistedFile extends Model implements PersistableFile
      */
     public function getFileableHash()
     {
-        return $this['hash'];
+        return $this['file_hash'];
     }
 
     /**
@@ -129,7 +131,7 @@ class EloquentPersistedFile extends Model implements PersistableFile
      */
     public function getFileableEnsuredHash()
     {
-        return $this['ensured_hash'];
+        return $this['file_ensured_hash'];
     }
 
     /**

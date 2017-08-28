@@ -39,17 +39,23 @@ class MakeAndStoreImage
         // Create the template.
         $response = $this->makeImage->execute($imageable, $template, $extension);
 
-        // Store it in the cloud.
-        $storeResponse = $this->storeFile->execute(new PresentedFile(
-            $context,
-            $response->image(),
-            PresentedFile::FILE_TYPE_CONTENT,
-            null,
-            [
-                'image_template_name' => $template . '.' . $response->extension(),
-                'uuid' => $uuid // Causes to not to create another folder.
-            ]
-        ));
+        $storeManipulated = $this->fManager->getConfig("contexts.{$context}.store_manipulated", true);
+
+        if ($storeManipulated) {
+            // Store it in the cloud.
+            $storeResponse = $this->storeFile->execute(new PresentedFile(
+                $context,
+                $response->image(),
+                PresentedFile::FILE_TYPE_CONTENT,
+                null,
+                [
+                    'image_template_name' => $template . '.' . $response->extension(),
+                    'uuid' => $uuid // Causes to not to create another folder.
+                ]
+            ));
+        } else {
+            $storeResponse = null;
+        }
 
         return new MakeAndStoreImageResponse($response, $storeResponse);
     }

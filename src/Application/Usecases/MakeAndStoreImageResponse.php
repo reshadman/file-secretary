@@ -16,7 +16,7 @@ class MakeAndStoreImageResponse
      */
     private $remoteFile;
 
-    public function __construct(MadeImageResponse $madeImageResponse, AddressableRemoteFile $remoteFile)
+    public function __construct(MadeImageResponse $madeImageResponse, AddressableRemoteFile $remoteFile = null)
     {
         $this->madeImageResponse = $madeImageResponse;
         $this->remoteFile = $remoteFile;

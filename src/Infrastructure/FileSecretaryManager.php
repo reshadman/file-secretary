@@ -18,7 +18,7 @@ class FileSecretaryManager
 
     public function __construct(array $config, FilesystemManager $filesystemManager)
     {
-        $this->config = $config;
+        $this->reInitConfig($config);
         $this->filesystemManager = $filesystemManager;
     }
 
@@ -116,10 +116,17 @@ class FileSecretaryManager
             throw new \InvalidArgumentException("Model Can not be null");
         }
 
-        if (!$model instanceof Model || !$model instanceof PersistableFile) {
+        $model = app($model);
+
+        if (!is_a($model, Model::class) || !is_a($model, PersistableFile::class)) {
             throw new \InvalidArgumentException("Model is not valid.");
         }
 
-        return app($model);
+        return $model;
+    }
+
+    public function  reInitConfig(array $config)
+    {
+        $this->config = $config;
     }
 }
