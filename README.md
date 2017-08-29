@@ -143,8 +143,8 @@ blocks in the default config file here:
 The best way to see the usage is by reading the integration tests, however you may
 read the following doc to understand what it does.
 
-### Terminology
-**Context** file-secretary uses contexts for detecting where to store the files based on laravel filesystem drivers,
+## Terminology
+**Contexts**: file-secretary uses contexts for detecting where to store the files based on laravel filesystem drivers,
 we have four context categories `basic_file`, `image`, `manipulated_image` and `assets`,
 all contexts should have a laravel filesystem driver, and a folder name in the driver.
 When you command to store the file in a context, the equivalent, laravel disk driver is found by the config
