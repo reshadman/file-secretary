@@ -32,12 +32,6 @@ Get rid of anything related to files in Laravel, This package handles all for yo
     - [Terminology](#terminology) : read for faster understanding.
     - [Defining Contexts](#Defining Contexts)
     - [Using the asset uploader](#using-the-asset-uploader)
-        - [When to use](#when-to-use)
-        - [Asset folders](#asset-folders)
-        - [Asset's deploy unique id](#asset's-deploy-unique-id)
-        - [Deleting old deploys](#deleting-old-deploy-assets)
-        - [Addressing Assets](#addressing-assets)
-        - [Assets and the Racksapce adapter](#assets-and-the-rackspace-adapter)
     - [Storing files](#storing-files)
         - [File names](#file-names)
         - [Storing files with file path](#storing-files-with-giving-path)
@@ -233,7 +227,7 @@ To serve your static assets through a public CDN, like Rackspace public CDN, you
     ]
 ];
 ```
-Everything will be handled normally, in development environment, the assets will be served
+Other things will be handled automatically, in development environment, the assets will be served
 local and in production env they will be served from the given `driver_base_address`
 
 To sync the latest assets run:
@@ -266,6 +260,170 @@ return [
     ],  
 ];
 ```
+
+
+## Storing Files
+file-secretary takes care of storing files after they have been validated by you. Then they can be tracked and served.
+
+### File names
+You can not control the file names, they are used for tracking files and images.
+
+For the files of a `basic_file` context, the storing format would be something like this:
+
+```bash
+https://driver_base_address.mycdn.com/[context_folder]/[unique-id-xxxx-xxxxx].[file_extension]
+```
+
+For the files of a `image` or `manipulated_image` context the file name would be some thing like this:
+```bash
+# Main file
+https://driver_base_address.mycdn.com/[context_folder]/[unique-id-xxxx-xxxx]/1_main.[image_extension]
+
+# Manipulated templates:
+https://driver_base_address.mycdn.com/[context_folder]/[unique-id-xxxx-xxxx]/[my_template_200x200.[image_extension_or_template_extension]
+```
+
+You can define your own unique id generator in the config:
+```php
+<?php 
+return [
+    'file_name_generator' => function (\Reshadman\FileSecretary\Application\PresentedFile $presentedFile) {
+        $size = $presentedFile->getFileInstance()->getSize();
+        $hash = sha1_file($presentedFile->getFileInstance()->getPath());
+        return  $size . '-' . $hash;
+    },
+      
+    // Other config elements...
+];
+```
+
+>Please note that your closure should always return a unique string.
+
+>The function prevents redundant files in the same context.
+
+
+## Storing Files
+You can pass different file targets to the store command. For storing a file you should create an instance of the 
+following class:
+
+```php
+<?php
+
+\Reshadman\FileSecretary\Application\PresentedFile::class;
+```
+
+To see the list of available file targets read the contents of the above class.
+
+### Storable file with file path
+If you have the a local file path, you can create the `PresentedFile` instance like the following:
+
+```php
+<?php
+
+$presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
+    'file_manager_private', // context name
+    $path = '../path_to/my_file.png',
+    \Reshadman\FileSecretary\Application\PresentedFile::FILE_TYPE_PATH,
+    basename($path)  
+);
+```
+
+### Storable file with file content
+If you have the file content, you can create the `PresentedFile` instance like the following:
+
+```php
+<?php
+
+$presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
+    'file_manager_private', // context name
+    file_get_contents($path = '../path_to/my_file.png'), // The mime type will be detected automatically.
+    \Reshadman\FileSecretary\Application\PresentedFile::FILE_TYPE_CONTENT
+);
+```
+
+### Storable file with file instance
+If you want to store the file from an instance of request `UploadedFile` or a Symfony file instance
+read the following
+
+```php
+<?php
+
+$presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
+    'file_manager_private', // context name
+    request()->file('company_logo'), // The mime type will be detected automatically.
+    \Reshadman\FileSecretary\Application\PresentedFile::FILE_TYPE_INSTANCE
+);
+```
+
+
+### Storable file with file HTTP url
+If you want to store a file from a URL you can read the following:
+
+```php
+<?php
+
+$presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
+    'file_manager_private', // context name
+    'https://logo_url.com/logo.png', // The mime type will be detected automatically.
+    \Reshadman\FileSecretary\Application\PresentedFile::FILE_TYPE_URL
+);
+```
+
+### Storable file with file HTTP url
+If you want to store a file from a base64 string read the following:
+
+```php
+<?php
+
+$presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
+    'file_manager_private', // context name
+    'base64encodecontent=', // The mime type will be detected automatically.
+    \Reshadman\FileSecretary\Application\PresentedFile::FILE_TYPE_BASE64
+);
+```
+
+>Note that if other meta data is attached to the string it should be removed by you, the mime type
+will be detected automatically.
+
+### Storing command
+After you have created the `PresentedFile` instance you should pass it to the store command.
+For knowing all the constructor parameters of the `PresentedFile` class read the class implementation.
+
+For finalizing the storage read the following
+
+```php
+<?php
+
+$presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
+    'file_manager_private', // context name
+    'SOME_TEXT_CONTENT_HERE_', // The mime type will be detected automatically.
+    \Reshadman\FileSecretary\Application\PresentedFile::FILE_TYPE_CONTENT
+);
+
+/** @var \Reshadman\FileSecretary\Application\Usecases\StoreFile $storeCommand */
+$storeCommand = app(\Reshadman\FileSecretary\Application\Usecases\StoreFile::class);
+
+$addressableRemoteFile = $storeCommand->execute($presentedFile);
+
+dd($addressableRemoteFile->fullRelative(), $addressableRemoteFile->fullUrl());
+
+```
+
+
+### Stored File Response
+After executing the store file command it will return an instance of:
+
+```php
+<?php
+\Reshadman\FileSecretary\Application\AddressableRemoteFile::class;
+```
+
+for knowing methods read the class implementation.
+
+## Storing Images
+Storing images is not different from storing files. You should only pass the proper
+`context_name` which has `image` category to the `PresentedFile` instance.
+
 
 
 #### 1. Uploading Purgeable Assets
