@@ -29,8 +29,8 @@ Get rid of anything related to files in Laravel, This package handles all for yo
  - [Installation](#installation)
  - [Configuration](#configuration)
  - [Usage](#usage)
-    - [Terminology](Terminology) : read for faster understanding.
-    - [Files, Images and Static Assets](#files,-images-and-static-assets)
+    - [Terminology](#terminology) : read for faster understanding.
+    - [Defining Contexts](#Defining Contexts)
     - [Using the asset uploader](#using-the-asset-uploader)
         - [When to use](#when-to-use)
         - [Asset folders](#asset-folders)
@@ -148,7 +148,7 @@ read the following doc to understand what it does.
 we have four context categories `basic_file`, `image`, `manipulated_image` and `assets`,
 all contexts should have a laravel filesystem driver, and a folder name in the driver.
 When you command to store the file in a context, the equivalent, laravel disk driver is found by the config
-the starting path(folder of the context) is considered as the directory. Also generating file URLs is handled by this config.
+and the starting path(folder of the context) is considered as the directory. Also generating file URLs is handled by this config.
 
 **Context Category: `basic_file`**: a basic file is a simple file that does not need
 any manipulation, when defining contexts you can indicate a `basic_file` context,
@@ -172,25 +172,101 @@ to store its manipulated images.
 like Rackspace's public CDN.
 
 **Asset Folders/Tags**: These are the folders that you want to upload to the cloud, in your blade templates
-by calling `fs($assetFolderName, 'your_local_path_to.css')` you can address them, assets are purged on each call, so the
+by calling `fs_asset('assetFolderName', 'your_local_path_to.css')` you can address them, assets are purged on each call, so the
 browser won't serve the old versions.
 
 **Image templates**: Templates are objects that keep the responsibility for mutating and manipulating images
 You may use the default generic template (which dynamically re-sizes, strips images with different config), or 
 implement your own one. They are defined in the config.
 
-**Database/Eloquent Tracked Files**: After storing a file in a context you may assign in to the centralized eloquent
-model, the this model can be attached to other business models, like the profile image of a user.
+**Database/Eloquent Tracked Files**: After storing a file in a context you may assign it to the centralized eloquent
+model, this model can be attached to other business models, like the profile image of a user.
 
 **File/Folder name**: in the context of this package, a file name is a unique id
 which is generated automatically, it needs to be unique in the context of your app.
-You can implement your own file name generator.
+You can implement your own file name generator. By default it is based on the `sha1(fContent) + filesize`, It guarantees
+That the same file is not redundant in the context.
 
-**Serving Files / Images / Manipulated Images**: Simply you may serve files publicly or privately, There is an HTTP endpoint in this package
-which will serve the requested images, It retrieves the equivalent `context` and `file_name` from the requested URL,
-and downloads the file from the storage and serves it to the user.
+**Serving Files/Images/Manipulated Images**: Simply you may serve files publicly or privately, There is an HTTP endpoint in this package
+which will serve the requested files/images, It retrieves the equivalent `context` and `file_name` from the requested URL,
+and downloads the file from the storage of the found context and serves it to the user.
 Before downloading, It calls the privacy object of the found context, if it returns false, it will throw an HTTP
-400 Exception. You can define your privacy classes for the context which will be discussed in the documentation.
+400 Exception. You can define your privacy classes for the found context, which will be discussed in the documentation.
+
+
+
+
+
+
+## Defining Contexts
+You can read the default `config('file_secretary.contexts')` element of the config file to see all the available
+options for creating contexts.
+
+> Context must be unique in terms of Laravel filesystem disks + the starting folder in the disk (the `context_folder`).
+
+
+
+
+## Using the asset uploader
+To serve your static assets through a public CDN, like Rackspace public CDN, you create an asset context like below:
+```php
+<?php return [
+    // Other file secretary config elements...
+    'contexts' => [
+            // Other contexts...
+            'assets_context' => [
+                'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_ASSET,
+                'driver' => 'rackspace_asset_disk',
+                'context_folder' => 'some_context_folder',
+                'driver_base_address' => 'some-unique-string.rackcdn.com/etc/',
+            ]
+    ],
+    
+    'asset_folders' => [
+        'backoffice' => [
+            'path' => public_path('backoffice-assets'),
+            'context' => 'assets_context',
+            // fills .env automatically like => BACKOFFICE_ASSET_ID=unique-id
+            // which causes to the browser to not serve old versions.
+            'env_key' => 'BACKOFFICE_ASSET_ID',
+        ],    
+    ]
+];
+```
+Everything will be handled normally, in development environment, the assets will be served
+local and in production env they will be served from the given `driver_base_address`
+
+To sync the latest assets run:
+```bash
+php artisan file-secretary:upload-assets --tags=backoffice
+```
+
+To address the assets in the template call:
+```php
+<?php
+$url = fs_asset('backoffice', 'styles.dist.css');
+
+dump($url);
+// In development env: http://localhost:8000/backoffice/styles.dist.css
+// In production env: some-unique-id.rackcdn.com/[context_folder]/[latest-unique-id]/styles.dist.css
+```
+
+To delete the old versions:
+By default the last two version are kept, and other versions are deleted after a successful upload.
+For a different strategy you may change the following event listener in `file_secretary.php`:
+
+```php
+<?php
+return [
+    // Other config file_secretary config elements
+    'listeners' => [
+        \Reshadman\FileSecretary\Application\Events\AfterAssetUpload::class => [
+            '\YourListener\Class',    
+        ]  
+    ],  
+];
+```
+
 
 #### 1. Uploading Purgeable Assets
 ```bash
