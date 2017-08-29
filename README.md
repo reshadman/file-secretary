@@ -79,7 +79,7 @@ Get rid of anything related to files in Laravel, This package handles all for yo
 
 ### Does this package fit my needs?
 <https://12factor.net> offers some practical specs for dealing with files, called *attached resources*.
-As files are an important part of most of the information services, they should be stored
+As files are an important part of the most of the information systems, they should be stored
 in a reliable, fast third party service (Like Amazon S3, or Rackspace object storage).
 
 ![Attached Resources](https://12factor.net/images/attached-resources.png)
@@ -100,7 +100,7 @@ file-secretary has been developed periodically it is not in its simplest shape. 
 in mind for next releases.
 
 ### Installation
-Add the following
+Run the following command in your project directory, to add the package to `composer.json`:
 ```bash
 composer require reshadman/file-secretary ">=1.0.0 <1.1.0"
 ```
@@ -118,17 +118,14 @@ return [
 ];
 ```
 
-####Publish config and migrations
-To publish configuration:
+Then publish the configuration file:
 ```bash
 php artisqan vendor:publish \
     --provider=Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider \
     --tag=config
 ```
 
-> By default the migration for database tracking is also published, you delete it if you don't want the functionality.
-
-To publish migrations:
+If you want to use the eloquent model for attaching files to your models, export the migration:
 ```bash
 php artisqan vendor:publish \
     --provider=Reshadman\FileSecretary\Infrastructure\FileSecretaryServiceProvider \
