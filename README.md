@@ -74,13 +74,38 @@ Get rid of anything related to files in Laravel, This package handles all for yo
         - [Best Practices](#best-practices)
         - [Nginx Directives](#nginx-directives)
   - [Limitations](#limitations)
-    
+
+
+
+### Does this package fit my needs?
+<https://12factor.net> offers some practical specs for dealing with files, called *attached resources*.
+As files are an important part of most of the information services, they should be stored
+in a reliable, fast third party service (Like Amazon S3, or Rackspace object storage).
+
+![Attached Resources](https://12factor.net/images/attached-resources.png)
+
+So if your application domain is not about files (You are not Dropbox or Amazon S3 itself :D).
+You can follow the spec and use the features this package offers, There are typically 
+some main usecases for files:
+ - Serving private/public files (Like PDF, Docs etc)
+ - Serving manipulatable images (Images that should be re-sized, watermarked etc),
+ which is computation/memory heavy.
+ - Serving static assets (like css, js, svg) etc.
+ - Attaching and tracking business domain files to their equivalent business model (Like the profile image of a user)
+
+Laravel file-secretary offers some simple solutions for the above needs.
+We did not apart the package to individual ones to respect the simplicity. The 
+interface that this package offers could be much simpler and more performant as Laravel
+file-secretary has been developed periodically it is not in its simplest shape. We will keep that
+in mind for next releases.
+
 ### Installation
+Add the following
 ```bash
-composer require reshadman/file-secretary 1.*
+composer require reshadman/file-secretary ">=1.0.0 <1.1.0"
 ```
 
-#### Add the Service Provider to app.php
+Add the Service Provider to your `config/app.php`
 ```php
 <?php
 return [
