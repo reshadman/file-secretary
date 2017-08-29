@@ -806,11 +806,13 @@ are still served from PHP, you can create an Nginx reverse proxy which does one 
  
  >Nginx Directives will be added to the package soon. To make it much more simpler.
  
-### Nginx Directives And Production Notes
+## Helper functions
+Will be added soon.
+ 
+## Nginx Directives And Production Notes
 Will be added soon.
 
-
-### Running the Integration Tests
+## Running the Integration Tests
  There are integration tests written for this package. To run integration
 tests do as the following:
 
@@ -825,7 +827,7 @@ tests do as the following:
 > Currently there is no isolated object unit testing for this package. 
 > They will be added in next releases.
 
-### Package Roadmap
+## Package Roadmap
  1. Writing more integration tests + isolated object unit tests.
  2. Use more semantic names for features, class names and methods names.
  3. Make the tracking, eloquent independent.
@@ -836,9 +838,9 @@ tests do as the following:
  6. Adding Nginx Directives
  7. Delegate some works to worker queue. 
 
-### About the package
+## About the package
 This package has been extracted from [*jobinja.ir - The leading job board and career platform in Iran*](https://jobinja.ir),
 This is part of the work for making [jobinja.ir](https://jobinja.ir), [12factor.net](http://12factor.net) compatible.
 
-### License
+## License
 The MIT License (MIT). Please see License File for more information.
