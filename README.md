@@ -39,6 +39,7 @@ Get rid of anything related to files in Laravel, This package handles all for yo
         - [Storable file with file content](#storable-file-with-file-content)
         - [Storable file with file instance](#storable-file-with-file-instance)
         - [Storable file with file HTTP url](#storable-file-with-file-http-url)
+        - [Storable file with base64 encoded content](#storable-file-with-base64-encoded-content)
         - [Stored File Resoponse](#stored-file-response)
     - [Storing images](#storing-images)
     - [Deleting files](#deleting-files)
@@ -394,7 +395,7 @@ $presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
 );
 ```
 
-### Storable file with file HTTP url
+### Storable file with base64 encoded content
 If you want to store a file from a base64 string read the following:
 
 ```php
