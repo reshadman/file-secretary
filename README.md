@@ -314,6 +314,33 @@ following class:
 
 To see the list of available file targets read the contents of the above class.
 
+> The `PresentedFile` class support different file types inluding: *URL*, *File Path*, *File Content* and *File Instance*
+> ,read the following docs.
+
+### Storing command
+After you have created the `PresentedFile` instance you should pass it to the store command.
+For knowing all the constructor parameters of the `PresentedFile` class read the class implementation.
+
+For finalizing the storage read the following:
+
+```php
+<?php
+
+$presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
+    'file_manager_private', // context name
+    'SOME_TEXT_CONTENT_HERE_', // The mime type will be detected automatically.
+    \Reshadman\FileSecretary\Application\PresentedFile::FILE_TYPE_CONTENT
+);
+
+/** @var \Reshadman\FileSecretary\Application\Usecases\StoreFile $storeCommand */
+$storeCommand = app(\Reshadman\FileSecretary\Application\Usecases\StoreFile::class);
+
+$addressableRemoteFile = $storeCommand->execute($presentedFile);
+
+dd($addressableRemoteFile->fullRelative(), $addressableRemoteFile->fullUrl());
+
+```
+
 ### Storable file with file path
 If you have the a local file path, you can create the `PresentedFile` instance like the following:
 
@@ -385,29 +412,6 @@ $presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
 >Note that if other meta data is attached to the string it should be removed by you, the mime type
 will be detected automatically.
 
-### Storing command
-After you have created the `PresentedFile` instance you should pass it to the store command.
-For knowing all the constructor parameters of the `PresentedFile` class read the class implementation.
-
-For finalizing the storage read the following
-
-```php
-<?php
-
-$presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
-    'file_manager_private', // context name
-    'SOME_TEXT_CONTENT_HERE_', // The mime type will be detected automatically.
-    \Reshadman\FileSecretary\Application\PresentedFile::FILE_TYPE_CONTENT
-);
-
-/** @var \Reshadman\FileSecretary\Application\Usecases\StoreFile $storeCommand */
-$storeCommand = app(\Reshadman\FileSecretary\Application\Usecases\StoreFile::class);
-
-$addressableRemoteFile = $storeCommand->execute($presentedFile);
-
-dd($addressableRemoteFile->fullRelative(), $addressableRemoteFile->fullUrl());
-
-```
 
 
 ### Stored File Response
