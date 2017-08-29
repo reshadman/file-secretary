@@ -25,21 +25,21 @@ Get rid of anything related to files in Laravel, This package handles all for yo
 
 ## Getting Started
 
- - [Does this package fit my needs?](#does-this-package-fit-my-needs?)
+ - [Does this package fit my needs?](#does-this-package-fit-my-needs)
  - [Installation](#installation)
  - [Configuration](#configuration)
  - [Usage](#usage)
     - [Terminology](#terminology) : read for faster understanding.
-    - [Defining Contexts](#Defining Contexts)
+    - [Defining Contexts](#defining-contexts)
     - [Using the asset uploader](#using-the-asset-uploader)
     - [Storing files](#storing-files)
         - [File names](#file-names)
-        - [Storing files with file path](#storing-files-with-giving-path)
-        - [Storing files with content](#storing-files-with-content)
-        - [Storing files with Laravel file instance](#storing-files-with-laravel-file-instance)
-        - [Storing base64-encoded files](#storing-base-64-encoded-files)
-        - [Storing files from URL](#storing-files-from-url)
-        - [Stored file response](#stored-file-response)
+        - [Storing Service(Command)](#storing-command)
+        - [Storable file with file path](#storable-file-with-file-path)
+        - [Storable file with file content](#storable-file-with-file-content)
+        - [Storable file with file instance](#storable-file-with-file-instance)
+        - [Storable file with file HTTP url](#storable-file-with-file-http-url)
+        - [Stored File Resoponse](#stored-file-response)
     - [Storing images](#storing-images)
     - [Deleting files](#deleting-files)
     - [Storing Eloquent-tracked files](#storing-eloquent-tracked-files)
@@ -263,7 +263,23 @@ return [
 
 
 ## Storing Files
+
 file-secretary takes care of storing files after they have been validated by you. Then they can be tracked and served.
+
+You can pass different file targets to the store command. For storing a file you should create an instance of the 
+following class:
+
+```php
+<?php
+
+\Reshadman\FileSecretary\Application\PresentedFile::class;
+```
+
+To see the list of available file targets read the contents of the above class.
+
+> The `PresentedFile` class support different file types inluding: *URL*, *File Path*, *File Content* and *File Instance*
+> ,read the following docs.
+
 
 ### File names
 You can not control the file names, they are used for tracking files and images.
@@ -301,21 +317,6 @@ return [
 
 >The function prevents redundant files in the same context.
 
-
-## Storing Files
-You can pass different file targets to the store command. For storing a file you should create an instance of the 
-following class:
-
-```php
-<?php
-
-\Reshadman\FileSecretary\Application\PresentedFile::class;
-```
-
-To see the list of available file targets read the contents of the above class.
-
-> The `PresentedFile` class support different file types inluding: *URL*, *File Path*, *File Content* and *File Instance*
-> ,read the following docs.
 
 ### Storing command
 After you have created the `PresentedFile` instance you should pass it to the store command.
