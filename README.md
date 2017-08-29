@@ -77,6 +77,9 @@ Get rid of anything related to files in Laravel, This package handles all for yo
 As files are an important part of the most of the information systems, they should be stored
 in a reliable, fast third party service (Like Amazon S3, or Rackspace object storage).
 
+This package is an implementation of an spec for making Laravel application 12factor compatible for attached resources.
+You can follow the spec with your own implementation.
+
 ![Attached Resources](https://12factor.net/images/attached-resources.png)
 
 So if your application domain is not about files (You are not Dropbox or Amazon S3 itself :D).
@@ -564,56 +567,253 @@ There are 3 available values for `store_manipuled`:
 For more info about this options read the `contexts` section of the default config file.
 
 
-#### 3. Manipulating Images
-For this feature you should:
-1. Create a context of type `"image"` in the contexts section
-of the config file.
-2. Create your needed templates in the `available_image_templates` of the config file.
+## Storing Eloquent-tracked files
 
-Templates should implement the following interface:
+If your domain models (like your `User` model) has some blob files, for example the avatar of the user,
+file-secretary offers a centralized, file model which keeps tracks of your cloud files.
+
+So after you uploaded your file to the proper context you may create a tracked record for that and 
+attach the record to your user's model through a foreign key.
+
+You should also include the packages migration to create the database table.
+
+### When to use tracked files
+Anytime you need to attach a cloud file to an eloquent business model,
+ - Your blog post has some image which need thumbnail resizing.
+ - Your user has some documents 
+ - etc.
+
+The eloquent model has some getter methods that generate the image template URLs and file URLs, automatically.
+
+For more info view the exported migration of the package.
+
+### Storing simple files and manipulatable images
+When storing files the process is not different from storing the file in the cloud,
+
+You create an instance of `PresentedFile` and pass it to the following service, the created record is returned instead:
+
 ```php
 <?php
-\Reshadman\FileSecretary\Infrastructure\Images\TemplateInterface::class;
+
+$presentedFile = new \Reshadman\FileSecretary\Application\PresentedFile(
+    'user_images_context',
+    request()->file('avatar_file'),
+    \Reshadman\FileSecretary\Application\PresentedFile::FILE_TYPE_INSTANCE,
+    basename(request()->file('avatar_file')) // Is stored in the table so you can show the client's name if needed.
+);
+
+/** @var \Reshadman\FileSecretary\Application\Usecases\StoreTrackedFile $storeTrackedFile */
+$storeTrackedFile = app(\Reshadman\FileSecretary\Application\Usecases\StoreTrackedFile::class);
+
+$trackedModel = $storeTrackedFile->execute($presentedFile);
+
+auth()->user()->avatar()->attach($trackedModel);
+
+dump($trackedModel->full_url);
+
+echo "<img src='{$trackedModel->image_templates['avatar_50x50']}' title='{$trackedModel->original_name}'/>";
+
 ```
 
-You can use the default template for most of the use cases, if you need yours
-you can see just how the following template works:
+### Using your own model
+By default the following implementation is used:
 ```php
 <?php
-\Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class;
+\Reshadman\FileSecretary\Application\EloquentPersistedFile::class;
 ```
 
-Storing images is not different from storing basic files you should only pass the 
-proper "context", The image will be stored in the following format:
+You can extend the above class and create your own implementation:
+
+```php
+<?php return [
+    // Other file_secretary.php config elements
+    'eloquent' => [
+        'model' => '\YourOwnModel\Class',
+        'table' => 'defined_table_in_model_or_this_string_in_fallback'
+    ]  
+];
+```
+
+### Deleting Eloquent-tracked files
+The package does not delete the file from cloud when you delete the tracked record, this is for preventing
+unexpected behaviour.
+
+You can delete the file manually by the following service:
+```php
+<?php
+
+/** @var \Reshadman\FileSecretary\Application\EloquentPersistedFile $trackedFile */
+$trackedFile = auth()->user()->avatar;
+
+/** @var \Reshadman\FileSecretary\Application\Usecases\DeleteTrackedFile $deleter */
+$deleter = app(\Reshadman\FileSecretary\Application\Usecases\DeleteTrackedFile::class);
+
+$deleter->execute($trackedFile);
+
+// You can also delete a file by uuid
+$deleter->execute($trackedFile->getFileableUuid());
+```
+
+### Handle what happens on delete
+
+There 3 strategies when calling the delete service:
+ - Ignore deleting the remote file
+ - Strict Delete of the remote file
+ - Delete if the current unique id of the file does not exists in the same context
+
+To indicate this you should execute the service like the following:
+```php
+<?php
+
+use Reshadman\FileSecretary\Application\Usecases\DeleteTrackedFile;
+
+/** @var \Reshadman\FileSecretary\Application\EloquentPersistedFile $trackedFile */
+$trackedFile = auth()->user()->avatar;
+
+/** @var \Reshadman\FileSecretary\Application\Usecases\DeleteTrackedFile $deleter */
+$deleter = app(\Reshadman\FileSecretary\Application\Usecases\DeleteTrackedFile::class);
+
+$deleter->execute($trackedFile, DeleteTrackedFile::ON_DELETE_DELETE_REMOTE);
+
+$deleter->execute($trackedFile, DeleteTrackedFile::ON_DELETE_IGNORE_REMOTE);
+
+$deleter->execute($trackedFile, DeleteTrackedFile::ON_DELETE_DELETE_IF_NOT_IN_OTHERS);
+```
+  
+
+### Serving files
+This package handles file serving for you based on the config you've given in the `contexts` section and the 
+`available_image_templates` section.
+
+However you may serve the files the way you are satisfied with.
+For instance if only admins are allowed to view some doc files you can create a route for that
+check that the current user is admin or not, then retrieve the file id from the request parameters and
+serve it to the user:
+```php
+<?php
+
+use Reshadman\FileSecretary\Application\EloquentPersistedFile;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
+
+class SomeController extends \Illuminate\Routing\Controller {
+    
+    public function getDocument($fileId, FileSecretaryManager $fManager)
+    {
+        if (!auth()->user()->is_admin) {
+            abort(403);
+        }
+        
+        /** @var EloquentPersistedFile $trackedFile */
+        $trackedFile = EloquentPersistedFile::findOrFail($fileId);
+        
+        $diskDriver = $fManager->getContextDriver($trackedFile->getFileableContext());
+        
+        $path = $trackedFile->full_relative_path;
+        
+        $contents = $diskDriver->get($path);
+        
+        if ($contents === false) {
+            abort(404);
+        }
+        
+        $headers = ['Content-Type' => $diskDriver->mimeType($path)];
+        
+        return response($contents, 200, $headers);
+    }
+    
+}
 
 ```
-context_folder/xxxx-xxxxxx-unique-folder-name-based-on-file-name-generator/main.png```
+
+If you provide a `driver_base_address` for contexts, the URLs will be generated with prepended base_address
+So if your files are public you can simply define the `driver_base_address` of your disk, and then
+they are served directly from the disk HTTP endpoint.
+ 
+
+### Default routes 
+ 
+There is a predefined route which file-secretary provides:
+
+```php
+<?php
+
+route('file-secretary.get.download_file', [
+    'context_name' => '',
+    'context_folder' => '',
+    'after_context_path'
+]);
 ```
 
-Manipulating happens on the fly, for instance when the following url is called:
+This route handles file serving for all contexts except the `asset` contexts.
+
+If you don't want this routes to be include in your package, disable it with setting its key to `false` in config.
+```php
+<?php return [
+    // Other config elements
+    'load_routes' => false  
+];
 ```
-https://jobinja.ir/file-secretary/images/company_assets/xxxxx-xxxxxxx/c_logo_200x200.png
+
+There is a default controller which you can use to attach it to your desired routes:
+```php
+<?php
+
+\Reshadman\FileSecretary\Presentation\Http\Actions\DownloadFileAction::class;
 ```
 
-The controller find the `main.png` file from the sibling folder, finds the template
-based on the requested file name and passes it to the proper template class.
-The output image is stored beside the main file. and the response is served to the user.
+There is a middleware included in the package which fetches the needed data to retrieve files from the cloud
+if you are using your own routes with the default controller, this middleware should be wrapped around
+the route:
 
-**Serving without the participation of PHP once created:**
+```php
+<?php
 
-Assume that you are using Rackspace object storage, each container has a base address.
-We will use our domain: `https://images.myapp.com` the domain is pointed
-to an nginx config which will first try to get the file from the rackspace and as a fallback
-will call our script endpoint which manipulates the image.
-With this strategy the first call will be a not found in rackspace, the second one
-will serve the file from the rackspace, you can also cache files in nginx for 
-reducing the cost.
+\Reshadman\FileSecretary\Presentation\Http\Middleware\PrivacyCheckMiddleware::class;
+```
 
-> In further releases, for files in the database(tracked files) we can store
-the name of the template that we have manipulated. So when generating
-the full url for that file we can decide to serve the rackspace file directly
-or from our application proxy, which will add the template to the database
-after the first call. So in the next calls the image is directly downloaded from Rackspace.
+### Restricting access
+You can decide that the given user is allowed to view the requested file or not, with defining privacy classes
+in the config, read the config file as the documentation. 
+
+The file identifiers are passed to your privacy class and then you can decide that the user is allowed to
+get this file or not.
+
+All of the privacy classes should implement the following interface:
+```php
+<?php
+
+\Reshadman\FileSecretary\Application\Privacy\PrivacyInterface::class;
+```
+
+> The restriction works only if you use the built-in controller class for serving.
+
+### Serving public files and manipulated images
+If you have public contexts, you can use the `driver_base_address` functionality to remove the participcation of PHP
+
+for `basic_file` context category, the base address will be prepended to the relative path, and it will be served 
+directly.
+
+### Serving images without the participation of PHP
+
+for `image` context category, the main image is always served from the base address, however the image templates
+are still served from PHP, you can create an Nginx reverse proxy which does one of the following:
+
+ - Set `store_manipulated` to `true`, Create an Nginx directive that will call the laravel endpoint
+ on file not found of the base address, the laravel endpoint will store the file beside the main so the in the next call
+ the image is served from your upstream base address.
+
+ - Set `store_manipulated` to `false` Use a reverse proxy with caching, which calls the laravel endpoint,
+ after a successful call  Nginx will cache the image, so the image will be served from Nginx's cache.
+ 
+ - Set `store_manipulated` to another context which uses a local disk, set the disk path as root for Nginx and 
+ on 404,  call the laravel endpoint, or make the route path and disk path look the same, So it will be routed
+ to the generator controller automatically when the file does not exist.
+ 
+ >Nginx Directives will be added to the package soon. To make it much more simpler.
+ 
+### Nginx Directives And Production Notes
+Will be added soon.
+
 
 ### Running the Integration Tests
  There are integration tests written for this package. To run integration
@@ -636,8 +836,10 @@ tests do as the following:
  3. Make the tracking, eloquent independent.
  4. Refactor the code both for design and performance.
  5. In a new release, use a polymorphic model for database tracked files which allows
- to indicate that whether a file has been used somewhere in the other models or not.
+ to indicate that whether a file has been used somewhere in the other models or not (by design).
   Which in result we can delete unused tracked files. This also works only with SQL databases.
+ 6. Adding Nginx Directives
+ 7. Delegate some works to worker queue. 
 
 ### About the package
 This package has been extracted from [*jobinja.ir - The leading job board and career platform in Iran*](https://jobinja.ir),
