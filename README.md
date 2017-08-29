@@ -42,6 +42,7 @@ Get rid of anything related to files in Laravel, This package handles all for yo
         - [Stored File Resoponse](#stored-file-response)
     - [Storing images](#storing-images)
     - [Deleting files](#deleting-files)
+    - [Updating files](#updating-files)
     - [Storing Eloquent-tracked files](#storing-eloquent-tracked-files)
         - [When to use tracked files](#when-to-use-tracked-files)
         - [Storing simple files](#storing-simple-files)
@@ -430,86 +431,137 @@ Storing images is not different from storing files. You should only pass the pro
 `context_name` which has `image` category to the `PresentedFile` instance.
 
 
-
-#### 1. Uploading Purgeable Assets
-```bash
-php artisan file-secretary:upload-assets --tags=asset_1,asset_2
-```
-
-For using this feature you should:
- 1. Create a context with `asset` category in the `contexts` section of the config file.
- 2. Create an asset folder with proper config in the `asset_folders` section
- of the config file.
- 
-The asset_1 and asset_2 options in **--tags=asset_1,asset_2** represent the name
-of the asset folders which should be defined in the config file.
-
-
-
-### 2. Storing Basic And Image Files
-For this feature you should:
-1. Create a context of type `"basic_file"` in the contexts section
-
-To Store a file you should create an instance of:
-
-```
-Reshadman\FileSecretary\Application\PresentedFile
-```
-
-and pass it to the ```StoreFile``` command.
-See the example below:
-```php
-<?php
-
-use Reshadman\FileSecretary\Application\PresentedFile;
-use Reshadman\FileSecretary\Application\Usecases\StoreFile;
-
-/** @var StoreFile $store */
-$store = app(StoreFile::class);
-
-$fileWithPath = new PresentedFile(
+new PresentedFile(
     'context_name',
     '/path/to/file',
     PresentedFile::FILE_TYPE_PATH,
     "optional_original_file_name.pdf"
 );
 
-$fileWithContent = new PresentedFile(
-    'context_name',
-    'this is a file content which the mime will be detected auto.',
-    PresentedFile::FILE_TYPE_CONTENT
-);
 
-$fileWithUrl = new PresentedFile(
-    'context_name',
-    'https://path_to_file_with_url.com/logo.png',
-    PresentedFile::FILE_TYPE_URL
-);
+## Deleting files
+To delete a file you should use the following service command:
 
-$fileBase64 = new PresentedFile(
-    'context_name',
-    'base_64_encoded_content=',
-    PresentedFile::FILE_TYPE_BASE64
-);
+```php
+<?php
 
-$fileWithUploaded = new PresentedFile(
-    'image_context_name',
-    request()->file('company_logo'),
-    PresentedFile::FILE_TYPE_INSTANCE
-);
+/** @var \Reshadman\FileSecretary\Application\Usecases\DeleteFile $deleter */
+$deleter = app(\Reshadman\FileSecretary\Application\Usecases\DeleteFile::class);
 
-$fileWithSymfonyFile = new PresentedFile(
-    'context_name',
-    new \Symfony\Component\HttpFoundation\File\File("/path_to_file.pdf"),
-    PresentedFile::FILE_TYPE_INSTANCE
-);
+$fileFullRelativePath = '/context_folder/unique-id.pdf';
 
-/** @var \Reshadman\FileSecretary\Application\AddressableRemoteFile $response */
-$response = $store->execute($fileWithPath);
-
-dd($response->fullRelative(), $response->fullUrl());
+$deleter->execute("context_name", $fileFullRelativePath);
 
 ```
+
+## Updating files
+When dealing with cloud file storages, which some of them offer CDN services, it is not a good idea
+to update a file, you can simply delete the old one and create a new one, that is because it takes some times
+that the CDN provider fetch the new version for all edges. And because we do not focus on file names 
+in our implementation it is better to leave the file in the storage, or add a `X-DELETE-AFTER` header to that,
+or delete it entirely and create a new file.
+If you have some reason that this functionality is needed please create a PR or open an issue.
+
+> Please not that if you implement your own update strategy, do not use the built in file name generator
+function, because the file name is based on file content, so if you change the file content with the same
+file name, it will be overridden next time the old file is uploaded to the context.
+ 
+
+## Manipulating images
+After you have created a context with `category` , `image` 
+file-secretary allows to manipulate and mutate images based on image templates, 
+you define image templates in the config file, and when the image is requested through the url
+with predefined parameters, the main parent image is fetched from the disk storage, the image content
+is passed to the template object and the template's result is served to the user.
+
+The image templates are defined for all `image` contexts.
+
+
+### Image templates 
+To define your image templates you should add your config to the `available_image_templates` of the config file:
+
+```php
+<?php return [
+  'companies_logo_200x200' => [
+    'class' => \Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class,
+    'args' => [
+      'width' => 200,
+      'height' => 200,
+      'encodings' => null, // When null only parent file encoding is allowed.
+      'strip' =>  false, // removes the ICC profile when imagick is used.
+    ],
+  ],  
+];
+```
+
+### Using the dynamic generic template
+By using the following class as the ```class``` parameter of your image template config, you can control the 
+behaviour with args, this will cover most of your needs:
+```php
+<?php 
+\Reshadman\FileSecretary\Infrastructure\Images\Templates\DynamicResizableTemplate::class
+```
+
+The `class` parameter is the template implementation, each template can have some arguments, 
+the `DynamicResiableTemplate` get some arguments which allow you to satisfy most of your needs.
+
+for resizing:
+ - Width: can be null or an integer, if null it will be automatically calculated
+ - Height: can be nul or an integer, if null it will be automatically calculated
+ - encodings: can be null or an array of images extensions like `['png', 'jpg', 'svg']`, if null
+  the same encoding as the parent image will be used.
+ - quality: takes an integer from 1 to 100
+ - strip: when true and using imagick the embedded ICC profile of the image can removed, this reduces the generated image
+ size significantly, the ICC profile is used to generate same true colors on different displys.
+ - mode: You can use different fit strategies take a look at template manager class (```TemplateManager``) for 
+  list of available fit strategies.
+
+### Writing your own template
+file-secretary uses intervention package for image manipulation.
+To write your own template you should create a class that implements the following interface
+
+```php
+<?php
+\Reshadman\FileSecretary\Infrastructure\Images\TemplateInterface::class;
+```
+Then you can use it in the config, also you can check the `DynamicResiableTemplate` implementation for faster understanding.
+
+
+### Storing manipulated image
+Manipulated images are requested through some URL, this URL is automatically generated by the 
+package if for instance your attaching the `profile_image` to `users` model in eloquent.
+
+The URL carries the following info with itself:
+ - The context name
+ - The context folder
+ - Main image folder
+ - Requested image template
+ - Requested image extension
+ 
+The endpoint retrieves the above info from the request and creates the following object
+```php
+<?php
+
+\Reshadman\FileSecretary\Application\PrivacyCheckNeeds::class;
+```
+
+The object contains all the needed information for fetching the parent image,
+manipulating it, storing it, and serving the manipulated image.
+
+After the image has been manipulated, the context config says to whether store the manipulated image
+in the cloud, or ignore it, or store it somewhere else, in a less expensive disk,
+all of these can be defined by setting the value of `store_manipulated` in the config arary of the context.
+
+There are 3 available values for `store_manipuled`:
+ 1. `false` : It won't store the manipulated image.
+ 2. `true`: Stores it beside the manipulated image.
+ 3. `another_context_name` : the target context should be of type `ContextCategoryTypes::TYPE_MANIPULATED_IMAGE`
+ so the parent file for example is stored in Amazon S3, all the manipulated images are stored in your own FTP
+ server which is wrapped around an Nginx proxy. This allows to serve manipulated images without the participation
+ of PHP, once they are created, and as they are not the only data source, nothing happens when they are deleted 
+ accidentally.
+ 
+For more info about this options read the `contexts` section of the default config file.
 
 
 #### 3. Manipulating Images
