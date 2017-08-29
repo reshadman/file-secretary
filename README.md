@@ -43,32 +43,25 @@ Get rid of anything related to files in Laravel, This package handles all for yo
     - [Storing images](#storing-images)
     - [Deleting files](#deleting-files)
     - [Updating files](#updating-files)
-    - [Storing Eloquent-tracked files](#storing-eloquent-tracked-files)
-        - [When to use tracked files](#when-to-use-tracked-files)
-        - [Storing simple files](#storing-simple-files)
-        - [Storing manipulatable images](#storing-manipulatable-images)
-        - [Using your own model](#using-your-own-model)
-    - [Deleting Eloquent-tracked files](#deleting-eloquent-tracked-files)
-        - [Handle what happens on delete](#handle-what-happens-on-delete)
     - [Manipulating images](#manipulating-images)
         - [Image Templates](#image-templates)
         - [Using the dynamic generic template](#using-the-dynamic-generic-template)
         - [Writing your own template](#writing-your-own-template)
-        - [Storing manipulated images](#storing-manipulated-images)
+        - [Storing manipulated image](#storing-manipulated-image)
+    - [Storing Eloquent-tracked files](#storing-eloquent-tracked-files)
+        - [When to use tracked files](#when-to-use-tracked-files)
+        - [Storing simple files and manupulateable images](#storing-simple-files-and-manipulatable-images)
+        - [Storing manipulatable images](#storing-manipulatable-images)
+        - [Using your own model](#using-your-own-model)
+    - [Deleting Eloquent-tracked files](#deleting-eloquent-tracked-files)
+        - [Handle what happens on delete](#handle-what-happens-on-delete)
     - [Serving files](#serving-files)
         - [Default Routes](#default-routes)
-        - [Serving simple files](#serving-simple-files)
-        - [Serving images](#serving-images)
-            - [Serving original images](#serving-original-images)
-            - [Serving manipulated images](#serving-manipulated-images)
-            - [Performance optimizations](#performance-optimizations)
         - [Restricting access](#restricting-access)
-        - [Add your custom routes](#add-your-custom-routes)
+        - [Serving public files and manipulated images](#serving-public-files-and-manipulated-images)
+        - [Serving images without the participation of PHP](#serving-images-without-the-participation-of-php)
     - [Helper functions](#helper-functions)
-    - [Production Notes](#production-notes)
-        - [Best Practices](#best-practices)
-        - [Nginx Directives](#nginx-directives)
-  - [Limitations](#limitations)
+    - [Nginx Directives And Production Notes](#nginx-directives-and-production-notes)
 
 
 
@@ -457,6 +450,8 @@ $deleter->execute("context_name", $fileFullRelativePath);
 
 ```
 
+>If your deleting an image context and it stores templates, the manipulated images with be deleted, too.
+
 ## Updating files
 When dealing with cloud file storages, which some of them offer CDN services, it is not a good idea
 to update a file, you can simply delete the old one and create a new one, that is because it takes some times
@@ -634,7 +629,7 @@ You can extend the above class and create your own implementation:
 ];
 ```
 
-### Deleting Eloquent-tracked files
+## Deleting Eloquent-tracked files
 The package does not delete the file from cloud when you delete the tracked record, this is for preventing
 unexpected behaviour.
 
@@ -681,7 +676,7 @@ $deleter->execute($trackedFile, DeleteTrackedFile::ON_DELETE_DELETE_IF_NOT_IN_OT
 ```
   
 
-### Serving files
+## Serving files
 This package handles file serving for you based on the config you've given in the `contexts` section and the 
 `available_image_templates` section.
 
