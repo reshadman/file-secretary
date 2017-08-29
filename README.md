@@ -140,7 +140,57 @@ blocks in the default config file here:
 
 
 ### Usage
-The best way to see the usage is by reading the integration tests.
+The best way to see the usage is by reading the integration tests, however you may
+read the following doc to understand what it does.
+
+#### Terminology
+**Context** file-secretary uses contexts for detecting where to store the files based on laravel filesystem drivers,
+we have four context categories `basic_file`, `image`, `manipulated_image` and `assets`,
+all contexts should have a laravel filesystem driver, and a folder name in the driver.
+When you command to store the file in a context, the equivalent, laravel disk driver is found by the config
+the starting path(folder of the context) is considered as the directory. Also generating file URLs is handled by this config.
+
+**Context Category: basic_file** a basic file is a simple file that does not need
+any manipulation, when defining contexts you can indicate a `basic_file` context,
+and when you command to store the file, they will be added in the context's laravel filesystem
+driver and the given folder. Files can be served with or without the participation of PHP.
+
+
+**Context Category: `image`** Images that should be manipulated and mutated based on your given config. 
+Storing manipulateable images is not different from storing simple files, except that
+instead of a unique file name, they are stored in a unique directory, 
+so the main image and its manipulated children are always in that unique folder.
+You can also have different context strategies for the main image and its manipulated children.
+You can indicate that the manipulated images of the main image should not be stored at all or be stored
+beside the main image, or be stored in a different context (as manipulated images are not critical they can 
+be stored in more cost effective storage like your own server).
+ 
+**Context Category `manipulated_image`**: This is a context that is used for `image` context as the place
+to store its manipulated images.
+
+**Context Category: `asset`** If you want, you can upload your entire built asset directory to your cloud CDN provider,
+like Rackspace's public CDN.
+
+**Asset Folders/Tags** These are the folders that you want to upload to the cloud, in your blade templates
+by calling `fs($assetFolderName, 'your_local_path_to.css')` you can address them, assets are purged on each call, so the
+browser won't serve the old versions.
+
+**Image templates** Templates are objects that keep the responsibility for mutating and manipulating images
+You may use the default generic template (which dynamically re-sizes, strips images with different config), or 
+implement your own one. They are defined in the config.
+
+**Database/Eloquent Tracked Files** After storing a file in a context you may assign in to the centralized eloquent
+model, the this model can be attached to other business models, like the profile image of a user.
+
+**File/Folder name** in the context of this package, a file name is a unique id
+which is generated automatically, it needs to be unique in the context of your app.
+You can implement your own file name generator.
+
+**Serving Files** Simply you may serve files publicly or privately, There is an HTTP endpoint in this package
+which will serve the requested images, It retrieves the equivalent `context` and `file_name` from the requested URL,
+and downloads the file from the storage and serves it to the user.
+Before downloading, It calls the privacy object of the found context, if it returns false, it will throw an HTTP
+400 Exception. You can define your privacy classes for the context which will be discussed in the documentation.
 
 #### 1. Uploading Purgeable Assets
 ```bash
