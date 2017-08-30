@@ -20,6 +20,12 @@ class UploadAssets extends Command
 
         $tags = explode(',', $tags);
 
+        $tags = collect($tags)->filter(function ($item) {
+            return !empty($item);
+        })->map(function ($item) {
+            return trim($item);
+        })->toArray();
+
         if (empty($tags)) {
             throw new \InvalidArgumentException("Invalid tag given.");
         }

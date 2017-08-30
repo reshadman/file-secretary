@@ -3,3 +3,4 @@ composer.phar
 composer.lock
 phpunit.xml
 .idea/
+/stub/local_drivers
