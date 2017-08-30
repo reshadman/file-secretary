@@ -346,8 +346,9 @@ class FileSecretaryManager
         }
 
         $starting = rtrim($contextData['driver_base_address'], '/');
+        $starting .= '/' . $contextData['context_folder'];
         $starting .= '/' . $assetFolder;
-        $starting .= $assetFolder . '/' . $envValue;
+        $starting  .=  '/' . $envValue;
 
         return $starting;
     }

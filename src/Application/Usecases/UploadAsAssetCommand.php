@@ -64,20 +64,43 @@ class UploadAsAssetCommand
         /** @var AdapterInterface $adapter */
         $adapter = $driver->getDriver()->getAdapter();
 
-        if ($adapter instanceof RackspaceAdapter) {
-            DirectoryPush::factory(
-                $tagData['path'],
-                $adapter->getContainer(),
-                $newVersionPath
-            )->execute();
+        $directoriesToUpload = [];
+
+        // If only some directories are allowed to be uploaded.
+        $only = array_get($tagData, 'only_directories');
+
+        if ($only === null) {
+            $directoriesToUpload = [$tagData['path']];
         } else {
-            foreach ($this->nativeFiles->allFiles($tagData['path']) as $file) {
+            $dirs = $this->nativeFiles->directories($tagData['path']);
 
-                $append = $this->secretaryManager->replaceFirst($tagData['path'], '', $file);
-
-                $driver->put($newVersionPath . '/' . $append, $this->nativeFiles->get($file));
+            foreach ($dirs as $check) {
+                foreach ($only as $needed) {
+                    if ($check === ($tagData['path'] . '/' . $needed)) {
+                        $directoriesToUpload[] = $check;
+                        break;
+                    }
+                }
             }
         }
+
+        foreach ($directoriesToUpload as $dirToUpload) {
+            if ($adapter instanceof RackspaceAdapter) {
+                DirectoryPush::factory(
+                    $dirToUpload,
+                    $adapter->getContainer(),
+                    $newVersionPath
+                )->execute();
+            } else {
+                foreach ($this->nativeFiles->allFiles($dirToUpload) as $file) {
+
+                    $append = $this->secretaryManager->replaceFirst($tagData['path'], '', $file);
+
+                    $driver->put($newVersionPath . '/' . $append, $this->nativeFiles->get($file));
+                }
+            }
+        }
+
 
         $this->events->fire(new AfterAssetUpload($assetTag, $uniqueName));
 
