@@ -95,8 +95,39 @@ class DirectoryPush extends DirectorySync
         $entities = array();
         $requests = array();
 
+        $parallelLimit = 15;
+        $process = 0;
+
+        $releaseCommand = function () use(&$requests, &$entities) {
+            // send update/create requests
+            $chunk = collect($requests)->chunk(10)->toArray();
+            if (count($requests)) {
+                foreach ($chunk as $chunkRequests) {
+                    $this->container->getClient()->send($chunkRequests);
+                }
+
+            }
+
+            // close all streams
+            if (count($entities)) {
+                foreach ($entities as $entity) {
+                    $entity->close();
+                }
+            }
+
+            $entities = [];
+            $requests = [];
+        };
+
         // Handle PUT requests (create/update files)
         foreach ($localFiles as $filename) {
+            if ($process > $parallelLimit) {
+                $releaseCommand();
+                $process = 0;
+            } else {
+                $process++;
+            }
+
             $remoteFilename = $this->targetDir ? $this->targetDir . '/' . $filename : $filename;
 
             $filePath = rtrim($this->basePath, '/') . '/' . $filename;
@@ -115,17 +146,7 @@ class DirectoryPush extends DirectorySync
 
         }
 
-        // send update/create requests
-        if (count($requests)) {
-            $this->container->getClient()->send($requests);
-        }
-
-        // close all streams
-        if (count($entities)) {
-            foreach ($entities as $entity) {
-                $entity->close();
-            }
-        }
+        $releaseCommand();
     }
 
     /**

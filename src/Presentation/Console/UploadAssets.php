@@ -7,7 +7,7 @@ use Reshadman\FileSecretary\Application\Usecases\UploadAsAssetCommand;
 
 class UploadAssets extends Command
 {
-    protected $signature = 'file-secretary:upload-assets {--tags}';
+    protected $signature = 'file-secretary:upload-assets {--tags=}';
 
     protected $description = "Takes a list of comma separated tags and mutates .env";
 
