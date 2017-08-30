@@ -70,7 +70,9 @@ class UploadAsAssetCommand
         $only = array_get($tagData, 'only_directories');
 
         if ($only === null) {
-            $directoriesToUpload = [$tagData['path']];
+            $directoriesToUpload = [
+                ['full' => $tagData['path'],  'relative' => '']
+            ];
         } else {
             $dirs = $this->nativeFiles->directories($tagData['path']);
 
@@ -79,7 +81,7 @@ class UploadAsAssetCommand
                     if ($check === ($tagData['path'] . '/' . $needed)) {
                         $directoriesToUpload[] = [
                             'full' => $check,
-                            'relative' => $needed
+                            'relative' => '/' . $needed
                         ];
                         break;
                     }
@@ -93,14 +95,14 @@ class UploadAsAssetCommand
                 DirectoryPush::factory(
                     $fullDir,
                     $adapter->getContainer(),
-                    $newVersionPath . '/' . $dirToUpload['relative']
+                    $newVersionPath . $dirToUpload['relative']
                 )->execute();
             } else {
                 foreach ($this->nativeFiles->allFiles($fullDir) as $file) {
 
                     $append = $this->secretaryManager->replaceFirst($fullDir, '', $file);
 
-                    $driver->put($newVersionPath . '/' . $dirToUpload['relative'] . '/' . $append, $this->nativeFiles->get($file));
+                    $driver->put($newVersionPath . $dirToUpload['relative'] . '/' . $append, $this->nativeFiles->get($file));
                 }
             }
         }
