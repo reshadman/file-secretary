@@ -77,7 +77,10 @@ class UploadAsAssetCommand
             foreach ($dirs as $check) {
                 foreach ($only as $needed) {
                     if ($check === ($tagData['path'] . '/' . $needed)) {
-                        $directoriesToUpload[] = $check;
+                        $directoriesToUpload[] = [
+                            'full' => $check,
+                            'relative' => $needed
+                        ];
                         break;
                     }
                 }
@@ -85,18 +88,19 @@ class UploadAsAssetCommand
         }
 
         foreach ($directoriesToUpload as $dirToUpload) {
+            $fullDir = $dirToUpload['full'];
             if ($adapter instanceof RackspaceAdapter) {
                 DirectoryPush::factory(
-                    $dirToUpload,
+                    $fullDir,
                     $adapter->getContainer(),
-                    $newVersionPath
+                    $newVersionPath . '/' . $dirToUpload['relative']
                 )->execute();
             } else {
-                foreach ($this->nativeFiles->allFiles($dirToUpload) as $file) {
+                foreach ($this->nativeFiles->allFiles($fullDir) as $file) {
 
-                    $append = $this->secretaryManager->replaceFirst($tagData['path'], '', $file);
+                    $append = $this->secretaryManager->replaceFirst($fullDir, '', $file);
 
-                    $driver->put($newVersionPath . '/' . $append, $this->nativeFiles->get($file));
+                    $driver->put($newVersionPath . '/' . $dirToUpload['relative'] . '/' . $append, $this->nativeFiles->get($file));
                 }
             }
         }
