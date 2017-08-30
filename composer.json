@@ -28,7 +28,10 @@
     "autoload": {
         "psr-4": {
             "Reshadman\\FileSecretary\\": "src/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
