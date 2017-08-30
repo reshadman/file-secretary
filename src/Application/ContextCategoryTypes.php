@@ -23,4 +23,9 @@ class ContextCategoryTypes
             static::TYPE_ASSET
         ];
     }
+
+    public static function isImageCategory($given)
+    {
+        return in_array($given, [static::TYPE_IMAGE, static::TYPE_MANIPULATED_IMAGE]);
+    }
 }

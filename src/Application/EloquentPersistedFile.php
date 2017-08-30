@@ -5,6 +5,7 @@ namespace Reshadman\FileSecretary\Application;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Reshadman\FileSecretary\Infrastructure\UrlGenerator;
 
 /**
  * Class EloquentPersistedFile
@@ -16,6 +17,8 @@ class EloquentPersistedFile extends Model implements PersistableFile
     use PersistableFileTrait;
 
     protected $guarded = ['id'];
+
+    protected $appends = ['full_url', 'image_templates'];
 
     /**
      * EloquentPersistedFile constructor.
@@ -170,5 +173,59 @@ class EloquentPersistedFile extends Model implements PersistableFile
     public function getFileableUpdatedAt()
     {
         return $this['updated_at'];
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFileableExtension()
+    {
+        return $this['file_extension'];
+    }
+
+    /**
+     * Full url.
+     *
+     * @return string
+     */
+    public function toUrl()
+    {
+        return UrlGenerator::fromEloquentInstance($this);
+    }
+
+    /**
+     * Get image templates
+     *
+     * @return array|null
+     */
+    public function getImageTemplates()
+    {
+        return UrlGenerator::getImagesTemplatesForEloquentInstance($this);
+    }
+
+    /**
+     * Get image templates.
+     *
+     * @return null|array
+     */
+    public function getImageTemplatesAttribute()
+    {
+        $imageTemplates = $this->getImageTemplates();
+
+        if ($imageTemplates === null) {
+            return null;
+        }
+
+        return $imageTemplates['children'];
+    }
+
+    /**
+     * Get full url.
+     *
+     * @return string
+     */
+    public function getFullUrlAttribute()
+    {
+        return $this->toUrl();
     }
 }

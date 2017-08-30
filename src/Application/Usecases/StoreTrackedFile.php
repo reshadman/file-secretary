@@ -40,7 +40,7 @@ class StoreTrackedFile
             'sibling_folder' => $presentedFile->getSiblingFolder(),
             'context_folder' => $presentedFile->getContextFolder(),
             'file_hash' => $presentedFile->getMd5Hash(),
-            'extension' => $presentedFile->getFileExtension(),
+            'file_extension' => $presentedFile->getFileExtension(),
             'file_ensured_hash' => $presentedFile->getSha1Hash(),
             'category' => $presentedFile->getCategory()
         ]);

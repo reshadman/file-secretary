@@ -39,6 +39,7 @@ class FileSecretaryManager
     public function reInitConfig(array $config)
     {
         $this->config = $this->decorateConfig($config);
+        UrlGenerator::purgeCalculated();
     }
 
     /**
@@ -71,7 +72,9 @@ class FileSecretaryManager
 
         $contextUniqueKeys = [];
         $usedManipulated = [];
-        foreach ($config['contexts'] as $contextName => $context) {
+        foreach ($config['contexts'] as $contextName => &$context) {
+
+            $context['name'] = $contextName;
 
             if (is_integer($contextName)) {
                 throw new \InvalidArgumentException("The context name can not be an integer.");
@@ -147,6 +150,8 @@ class FileSecretaryManager
         }
 
         foreach ($config['asset_folders'] as $name => &$folder) {
+
+
             if ( ! array_key_exists('context', $folder)) {
                 throw new \InvalidArgumentException("A context is needed for an asset folder.");
             }
@@ -160,9 +165,11 @@ class FileSecretaryManager
                 );
             }
 
-            if ( ! array_key_exists('path', $folder) || ! is_string($folder['path'])) {
+            if ( ! array_key_exists('after_public_path', $folder) || ! is_string($folder['after_public_path'])) {
                 throw new \InvalidArgumentException("You should provide the path for the folder.");
             }
+
+            $folder['path'] = public_path($folder['after_public_path']);
 
             if ( ! array_key_exists('env_key', $folder)) {
                 throw new \InvalidArgumentException("A unique env key is needed for this folder.");
@@ -316,5 +323,37 @@ class FileSecretaryManager
         }
 
         throw new \InvalidArgumentException("Context has not parent.");
+    }
+
+    public function assetFolderToStartingUrl($assetFolder, $force = false)
+    {
+        $data = $this->getConfig("asset_folders.{$assetFolder}");
+
+        if ($assetFolder === null) {
+            throw new \InvalidArgumentException("Asset folder not found.");
+        }
+
+        if ( ! $force && app()->environment() !== 'production') {
+            return asset('/');
+        }
+
+        $contextData = $this->getContextData($data['context']);
+
+        $envValue = env($data['env_key']);
+
+        if ($envValue === null) {
+            throw new \RuntimeException("You have not uploaded the assets successfully.");
+        }
+
+        $starting = rtrim($contextData['driver_base_address'], '/');
+        $starting .= '/' . $assetFolder;
+        $starting .= $assetFolder . '/' . $envValue;
+
+        return $starting;
+    }
+
+    public function getAvailableTemplates()
+    {
+        return $this->getConfig("available_image_templates", []);
     }
 }

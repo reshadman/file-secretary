@@ -59,7 +59,7 @@
             'args' => [
                 'width' => 200,
                 'height' => 200,
-                'encodings' => null, // When null only parent file encoding is allowed.
+                'encodings' => null, // always needed, When null only parent file encoding is allowed.
                 'strip' =>  false, // removes the ICC profile when imagick is used.
             ],
         ],
@@ -70,7 +70,7 @@
                 'height' => null, // Height will be calculated automatically
                 'mode' => \Reshadman\FileSecretary\Infrastructure\Images\TemplateManager::MODE_FIT, // The image will fit
                 'encodings' => [
-                    'png' // Ony png extension is served otherwise it throws 404 exception
+                    'png', // Ony png extension is served otherwise it throws 404 exception
                 ]
             ],
         ],
@@ -199,7 +199,7 @@
     'asset_folders' => [
 
         'asset_1' => [
-            'path' => __DIR__ . '/../../stub/asset_tags/asset_1',
+            'after_public_path' => 'asset_tags/asset_1',
             'context' => 'assets',
 
             // You should specify the name of the env variable which stores the unique id
@@ -207,7 +207,7 @@
         ],
 
         'asset_2' => [
-            'path' => __DIR__ . '/../../stub/asset_tags/asset_2',
+            'after_public_path' => 'asset_tags/asset_2',
             'context' => 'assets',
             'env_key' => 'ASSET_2_ID'
         ]

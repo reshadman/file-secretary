@@ -57,7 +57,7 @@ class UploadAsAssetCommand
         $driver = $this->secretaryManager->getContextDriver($tagData['context']);
 
         $newVersionPath = '/' . $this->secretaryManager->getAssetStartingPath($tagData['context'],
-                $assetTag) . '/' . $uniqueName = time();
+                $assetTag) . '/' . ($uniqueName = time()) . '/' . $tagData['after_public_path'];
 
         $this->events->fire(new BeforeAssetUpload($assetTag, $uniqueName));
 

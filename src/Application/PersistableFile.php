@@ -95,6 +95,11 @@ interface PersistableFile
     public function getFinalPath();
 
     /**
+     * @return string|null
+     */
+    public function getFileableExtension();
+
+    /**
      * Get category of the file
      *
      * @return string

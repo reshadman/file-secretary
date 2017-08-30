@@ -2,6 +2,8 @@
 
 namespace Reshadman\FileSecretary\Application;
 
+use Reshadman\FileSecretary\Infrastructure\UrlGenerator;
+
 class AddressableRemoteFile
 {
     private $context;
@@ -13,9 +15,13 @@ class AddressableRemoteFile
         $this->relative = $relative;
     }
 
+    public static function buildFromArray(array $array)
+    {
+    }
+
     public function fullUrl()
     {
-        return $this->getContextBaseAddress() . '/' . $this->fullRelative();
+        return $this->toUrl();
     }
 
     public function getContextBaseAddress()
@@ -30,6 +36,11 @@ class AddressableRemoteFile
         return trim($this->getContextFolder() . '/' . $this->relative, '/');
     }
 
+    public function relative()
+    {
+        return $this->relative;
+    }
+
     public function getContextFolder()
     {
         return array_get($this->context, 'context_folder');
@@ -38,5 +49,15 @@ class AddressableRemoteFile
     public function getContextName()
     {
         return array_get($this->context, 'name');
+    }
+
+    public function toUrl()
+    {
+        return UrlGenerator::fromAddressableRemoteFile($this);
+    }
+
+    public function getImageTemplates()
+    {
+        return UrlGenerator::getImageTemplatesForRemoteFile($this);
     }
 }

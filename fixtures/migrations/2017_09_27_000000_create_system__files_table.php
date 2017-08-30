@@ -18,7 +18,7 @@ class CreateSystemFilesTable extends Migration
             $table->string('context', 64)->index();
             $table->string('original_name')->nullable();
             $table->string('file_name');
-            $table->string('extension', 12);
+            $table->string('file_extension', 12);
             $table->string('sibling_folder')->nullable();
             $table->string('context_folder')->nullable();
             $table->string('file_hash')->nullable();

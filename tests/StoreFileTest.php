@@ -20,6 +20,12 @@ class StoreFileTest extends BaseTestCase
 
         $addressable = $store->execute($presented);
 
+        $imageTemplates = ($addressable->getImageTemplates());
+
+        $this->assertTrue(array_key_exists('companies_logo_200x200', $imageTemplates['children']));
+
+        $this->assertTrue(array_key_exists('companies_logo_201xauto.png', $imageTemplates['children']));
+
         $remoteMd5 = ($presented->getContextDriver()->get($addressable->fullRelative()));
 
         $this->assertEquals($remoteMd5, $md5Content);
@@ -37,6 +43,8 @@ class StoreFileTest extends BaseTestCase
         $store = app(StoreFile::class);
 
         $addressable = $store->execute($presented);
+
+        $this->assertContains('http://', $addressable->toUrl());
 
         $remoteMd5 = ($presented->getContextDriver()->get($addressable->fullRelative()));
 
