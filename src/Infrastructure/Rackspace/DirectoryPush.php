@@ -95,7 +95,7 @@ class DirectoryPush extends DirectorySync
         $entities = array();
         $requests = array();
 
-        $parallelLimit = 15;
+        $parallelLimit = 45;
         $process = 0;
 
         $releaseCommand = function () use(&$requests, &$entities) {
