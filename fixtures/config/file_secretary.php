@@ -5,20 +5,12 @@
     | File Name Generator
     |--------------------------------------------------------------------------
     |
-    | An instance of the presented file is passed to this function,
-    | You can use your own function to generate the name
-    | By default the following function prevents redundant files with the
-    | same content. Based on the file hash + file size. It is recommended
-    | to keep the function as there is a low probability that
-    | two different files exist with different contents but same file
-    | size and sha1 hash of the content.
+    | An instance of the presented file is passed to the "generate" method of
+    | this class,
+    | you can implement your own class which respects the interface.
     |
     */
-    'file_name_generator' => function (\Reshadman\FileSecretary\Application\PresentedFile $presentedFile) {
-        $size = $presentedFile->getFileInstance()->getSize();
-        $hash = sha1_file($presentedFile->getFileInstance()->getPath());
-        return  $size . '-' . $hash;
-    },
+    'file_name_generator' => \Reshadman\FileSecretary\Infrastructure\Sha1FileNameGenerator::class,
 
     /*
     |--------------------------------------------------------------------------

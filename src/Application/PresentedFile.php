@@ -263,7 +263,11 @@ class PresentedFile
             return $this->uuid;
         }
 
-        return $this->uuid = $this->getSecretaryManager()->getConfig("file_name_generator")($this);
+        $generator = $this->getSecretaryManager()->getConfig("file_name_generator");
+
+        $this->uuid = forward_static_call([$generator, 'generate'], $this);
+
+        return $this->uuid;
     }
 
     /**

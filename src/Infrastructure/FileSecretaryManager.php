@@ -56,12 +56,6 @@ class FileSecretaryManager
             );
         }
 
-        if ( ! $config['file_name_generator'] instanceof \Closure) {
-            throw new \InvalidArgumentException(
-                "The file name generator is not a callable function."
-            );
-        }
-
         if ( ! array_key_exists("contexts", $config)) {
             throw new \InvalidArgumentException("The 'context' element of the config is not defined.");
         }
