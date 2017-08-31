@@ -98,9 +98,9 @@ class DirectoryPush extends DirectorySync
         $parallelLimit = 45;
         $process = 0;
 
-        $releaseCommand = function () use(&$requests, &$entities) {
+        $releaseCommand = function () use(&$requests, &$entities, $parallelLimit) {
             // send update/create requests
-            $chunk = collect($requests)->chunk(10)->toArray();
+            $chunk = collect($requests)->chunk($parallelLimit)->toArray();
             if (count($requests)) {
                 foreach ($chunk as $chunkRequests) {
                     $this->container->getClient()->send($chunkRequests);
