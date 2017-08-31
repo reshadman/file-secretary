@@ -200,9 +200,19 @@ class DownloadFileAction extends Controller
 
         // We allow to merge additional headers like force download or etc.
         if (
-            array_key_exists('headers_mutator', $contextData) &&
-            $contextData['headers_mutator'] instanceof \Closure
+            array_key_exists('headers_mutator', $contextData)
         ) {
+            $headers = forward_static_call_array(
+                [
+                    $contextData['headers_mutator'],
+                    'mutateHeaders'
+                ],
+                [
+                    $needs,
+                    $headers
+                ]
+            );
+
             $headers = $contextData['headers_mutator']($needs, $headers);
         }
         return $headers;
