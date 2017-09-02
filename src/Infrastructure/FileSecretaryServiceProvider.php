@@ -23,7 +23,7 @@ class FileSecretaryServiceProvider extends ServiceProvider
             ], 'config');
 
             $this->publishes([
-                __DIR__ . '/../../fixtures/migrations'
+                __DIR__ . '/../../fixtures/migrations' => base_path('database/migrations')
             ], 'migrations');
         }
 
