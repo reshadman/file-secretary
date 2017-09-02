@@ -114,15 +114,6 @@
             'context_folder' => 'file_manager',
             'driver' => 'private',
             'driver_based_address' => null,
-            'headers_mutator' => function ($needs, array $headers) {
-                /** @var \Reshadman\FileSecretary\Application\PrivacyCheckNeeds $needs */
-
-                // Force download
-                $headers['Content-Description'] = 'File Transfer';
-                $headers['Content-Disposition'] = 'attachment; filename="' . $needs->getFileName() . '""';
-
-                return $headers;
-            },
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_BASIC_FILE,
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\NotAllowedPrivacy::class
         ],
