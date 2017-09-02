@@ -167,9 +167,7 @@ class DynamicResizableTemplate extends AbstractDynamicTemplate implements Dynami
     protected function decoratePossibleTransparentPng(InterventionImage $image)
     {
         if ($image->mime() == 'image/png') {
-            $empty = $this->getImageManager()->canvas($image->getWidth(), $image->getHeight());
-            $image = $empty->fill($image);
-            $image->encode('png');
+            $image = $image->resizeCanvas($image->getWidth(), $image->getHeight());
         }
 
         return $image;
