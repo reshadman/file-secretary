@@ -72,7 +72,7 @@ class UrlGenerator
         $cacheKey = 'full_relative_to_full_url__' . $context;
 
         if (!array_key_exists($cacheKey, static::$cache)) {
-            $baseAddress = static::getManager()->getConfig("contexts.$context.base_address");
+            $baseAddress = static::getManager()->getConfig("contexts.$context.driver_base_address");
 
             if ($baseAddress === null) {
                 return null;
@@ -94,7 +94,8 @@ class UrlGenerator
     public static function fromContextSpec($contextName, $contextFolder, $afterContextPath, $preferBaseAddress = true)
     {
         if ($preferBaseAddress) {
-            $contextBaseAddress = static::getManager()->getConfig("contexts.$contextName.base_address");
+            $contextBaseAddress = static::getManager()->getConfig("contexts.$contextName.driver_base_address");
+
 
             if ($contextBaseAddress) {
                 return self::fromContextFullRelative($contextName, $contextFolder . '/' . $afterContextPath);
