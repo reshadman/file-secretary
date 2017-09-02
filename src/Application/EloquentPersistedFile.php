@@ -5,6 +5,7 @@ namespace Reshadman\FileSecretary\Application;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Reshadman\FileSecretary\Application\Usecases\DeleteTrackedFile;
 use Reshadman\FileSecretary\Infrastructure\UrlGenerator;
 
 /**
@@ -221,11 +222,17 @@ class EloquentPersistedFile extends Model implements PersistableFile
 
     /**
      * Get full url.
-     *
+     *1
      * @return string
      */
     public function getFullUrlAttribute()
     {
         return $this->toUrl();
+    }
+
+    public function deleteInstanceAndRemote($onDelete = DeleteTrackedFile::ON_DELETE_DELETE_IF_NOT_IN_OTHERS)
+    {
+        $command = app(DeleteTrackedFile::class);
+        return $command->execute($this, $onDelete);
     }
 }
