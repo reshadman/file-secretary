@@ -66,7 +66,7 @@ class PresentedFile
     private function resolveFile()
     {
         if ($this->isFileType(static::FILE_TYPE_INSTANCE)) {
-            $path = $this->file->getPath();
+            $path = $this->file->getRealPath();
             $this->fileContents = function () use ($path) {
                 return $this->getNativeFilesInstance()->get($path);
             };

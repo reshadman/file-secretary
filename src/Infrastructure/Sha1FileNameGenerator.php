@@ -10,7 +10,7 @@ class Sha1FileNameGenerator implements FileUniqueIdGeneratorInterface
     public static function generate(PresentedFile $presentedFile)
     {
         $size = $presentedFile->getFileInstance()->getSize();
-        $hash = sha1_file($presentedFile->getFileInstance()->getPath());
+        $hash = sha1_file($presentedFile->getFileInstance()->getRealPath());
         return  $size . '-' . $hash;
     }
 }
