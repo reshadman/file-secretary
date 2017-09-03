@@ -140,6 +140,7 @@
             'context_folder' => 'images2',
             'store_manipulated' => false, // false to not store manipulated images
             'driver_base_address' => null,
+            'headers_mutator' => \Reshadman\FileSecretary\Presentation\Http\CacheContentHeadersMutator::class,
             'category' => \Reshadman\FileSecretary\Application\ContextCategoryTypes::TYPE_IMAGE,
             'privacy' => \Reshadman\FileSecretary\Application\Privacy\PublicPrivacy::class
         ],

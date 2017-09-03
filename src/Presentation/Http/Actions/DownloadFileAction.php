@@ -202,18 +202,24 @@ class DownloadFileAction extends Controller
         if (
             array_key_exists('headers_mutator', $contextData)
         ) {
-            $headers = forward_static_call_array(
-                [
-                    $contextData['headers_mutator'],
-                    'mutateHeaders'
-                ],
-                [
-                    $needs,
-                    $headers
-                ]
-            );
+            $mutators = $contextData['headers_mutator'];
 
-            $headers = $contextData['headers_mutator']($needs, $headers);
+            if (!is_array($mutators)) {
+                $mutators = [$mutators];
+            }
+
+            foreach ($mutators as $mutator) {
+                $headers = forward_static_call_array(
+                    [
+                        $mutator, // Class
+                        'mutateHeaders' // Method
+                    ],
+                    [
+                        $needs, // arg1
+                        $headers // arg2
+                    ]
+                );
+            }
         }
         return $headers;
     }
