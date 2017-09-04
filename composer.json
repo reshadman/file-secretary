@@ -39,6 +39,13 @@
         }
     },
     "license": "MIT",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "\\Reshadman\\FileSecretary\\Infrastructure\\FileSecretaryServiceProvider"
+            ]
+        }
+    },
     "authors": [
         {
             "name": "Reza Shadman",
