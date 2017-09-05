@@ -301,14 +301,26 @@ You can define your own unique id generator in the config:
 ```php
 <?php 
 return [
-    'file_name_generator' => function (\Reshadman\FileSecretary\Application\PresentedFile $presentedFile) {
-        $size = $presentedFile->getFileInstance()->getSize();
-        $hash = sha1_file($presentedFile->getFileInstance()->getPath());
-        return  $size . '-' . $hash;
-    },
+    'file_name_generator' => \OpensslRandomFileNameGenerator::class,
       
-    // Other config elements...
+    // O1ther config elements...
 ];
+?>
+
+<?php
+
+use Reshadman\FileSecretary\Application\FileUniqueIdGeneratorInterface;
+use Reshadman\FileSecretary\Application\PresentedFile;
+
+class OpensslRandomFileNameGenerator implements FileUniqueIdGeneratorInterface {
+     public static function generate(PresentedFile $presentedFile)
+     {
+         $length = 128;
+         return bin2hex(openssl_random_pseudo_bytes($length / 2));
+     }
+}
+?>
+
 ```
 
 >Please note that your closure should always return a unique string.
@@ -782,6 +794,18 @@ All of the privacy classes should implement the following interface:
 ```
 
 > The restriction works only if you use the built-in controller class for serving.
+
+
+### Manipulating Headers
+You can use an array pipeline for manipulating response headers on serving.
+Each array item should be an implementation of:
+```php
+<?php
+\Reshadman\FileSecretary\Presentation\Http\HeadersMutatorInterface::class;
+```
+The headers array is passed to each header mutator item defined in config.
+
+For details on how to use please see the ```public_images``` section of the config file.
 
 ### Serving public files and manipulated images
 If you have public contexts, you can use the `driver_base_address` functionality to remove the participcation of PHP
