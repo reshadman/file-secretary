@@ -2,7 +2,6 @@
 
 namespace Reshadman\FileSecretary\Infrastructure;
 
-use MongoDB\BSON\Persistable;
 use Reshadman\FileSecretary\Application\AddressableRemoteFile;
 use Reshadman\FileSecretary\Application\ContextCategoryTypes;
 use Reshadman\FileSecretary\Application\PersistableFile;
@@ -54,12 +53,12 @@ class UrlGenerator
     {
         $cacheKey = 'asset_folders__' . $assetFolder . '_bool_' . (string)$force;
 
-        if (!array_key_exists($cacheKey, static::$cache)) {
+        if ( ! array_key_exists($cacheKey, static::$cache)) {
             $baseAddress = static::getManager()->assetFolderToStartingUrl($assetFolder, $force);
             static::$cache[$cacheKey] = $baseAddress;
         }
 
-        return rtrim(static::$cache[$cacheKey] , '/'). '/' . trim($item, '/');
+        return rtrim(static::$cache[$cacheKey], '/') . '/' . trim($item, '/');
     }
 
     /**
@@ -71,7 +70,7 @@ class UrlGenerator
     {
         $cacheKey = 'full_relative_to_full_url__' . $context;
 
-        if (!array_key_exists($cacheKey, static::$cache)) {
+        if ( ! array_key_exists($cacheKey, static::$cache)) {
             $baseAddress = static::getManager()->getConfig("contexts.$context.driver_base_address");
 
             if ($baseAddress === null) {
@@ -113,14 +112,23 @@ class UrlGenerator
      * Get address for an eloquent instance
      *
      * @param PersistableFile $persistedFile
+     * @param bool $preferBase
      * @return array|null|string
      */
     public static function fromEloquentInstance(PersistableFile $persistedFile, $preferBase = true)
     {
+        $sibling = $persistedFile->getFileableSiblingFolder();
+
+        if ($sibling !== null) {
+            $path = $sibling . '/' . $persistedFile->getFileableFullFileName();
+        } else {
+            $path = $persistedFile->getFileableFullFileName();
+        }
+
         return static::fromContextSpec(
             $persistedFile->getFileableContext(),
             $persistedFile->getFileableContextFolder(),
-            $persistedFile->getFileableFileName(),
+            $path,
             $preferBase
         );
     }
@@ -131,7 +139,7 @@ class UrlGenerator
             $persistedFile->getFileableContext(),
             $persistedFile->getFileableContextFolder(),
             $persistedFile->getFileableSiblingFolder(),
-            $persistedFile->getFileableUuid(),
+            $persistedFile->getFileableFileName(),
             $persistedFile->getFileableExtension(),
             $preferBase
         );
@@ -151,7 +159,7 @@ class UrlGenerator
     {
         $contextData = static::getManager()->getContextData($remoteFile->getContextName());
 
-        if (!ContextCategoryTypes::isImageCategory($contextData['category'])) {
+        if ( ! ContextCategoryTypes::isImageCategory($contextData['category'])) {
             return null;
         }
 
