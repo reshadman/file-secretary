@@ -14,6 +14,20 @@
 
     /*
     |--------------------------------------------------------------------------
+    | Currently works only with rackspace
+    |--------------------------------------------------------------------------
+    |
+    | Allows to add custom config to your disk driver upon upload like headers etc.
+    |
+    */
+    'default_store_config_array' => [
+        'headers' => [
+            'Cache-Control' =>  'max-age=31536000'
+        ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Database Tracking (Persistable Files)
     |--------------------------------------------------------------------------
     |
