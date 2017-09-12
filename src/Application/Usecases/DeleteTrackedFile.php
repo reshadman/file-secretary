@@ -45,8 +45,10 @@ class DeleteTrackedFile
             case static::ON_DELETE_DELETE_IF_NOT_IN_OTHERS:
                 $exists = $this->fManager->getPersistModel()
                     ->where('id', '!=', $fileUuidOrInstance->getFileableIdentifier())
-                    ->where('uuid', '=', $fileUuidOrInstance->getFileableUuid())
-                    ->exists();
+                    ->where(function ($q) use($fileUuidOrInstance) {
+                        return $q->where('sibling_folder', '=', $un = $fileUuidOrInstance->getFileableFileUniqueIdentifier())
+                            ->orWhere('file_name', '=', $un);
+                    })->exists();
 
                 if ( ! $exists) {
                     $delete();

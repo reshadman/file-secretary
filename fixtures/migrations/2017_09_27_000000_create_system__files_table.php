@@ -14,7 +14,7 @@ class CreateSystemFilesTable extends Migration
     {
         Schema::create('system__files', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('uuid')->index();
+            $table->string('uuid')->unique();
             $table->string('context', 64)->index();
             $table->string('original_name')->nullable();
             $table->string('file_name');
@@ -25,6 +25,7 @@ class CreateSystemFilesTable extends Migration
             $table->string('file_ensured_hash')->nullable();
             $table->integer('file_size')->nullable();
             $table->string('category', 20);
+            $table->integer('used_times')->default(0);
             $table->timestamps();
         });
     }

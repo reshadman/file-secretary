@@ -2,6 +2,7 @@
 
 namespace Reshadman\FileSecretary\Application\Usecases;
 
+use Ramsey\Uuid\Uuid;
 use Reshadman\FileSecretary\Application\EloquentPersistedFile;
 use Reshadman\FileSecretary\Application\PersistableFile;
 use Reshadman\FileSecretary\Application\PresentedFile;
@@ -33,10 +34,10 @@ class StoreTrackedFile
         $this->storeFile->execute($presentedFile);
 
         return $this->fManager->getPersistModel()->create([
-            'uuid' => $presentedFile->getUuid(),
+            'uuid' => Uuid::uuid4()->toString(),
             'context' => $presentedFile->getContext(),
             'original_name' => $presentedFile->getOriginalName(),
-            'file_name' => $presentedFile->getFileName(),
+            'file_name' => $presentedFile->getFileName(false),
             'sibling_folder' => $presentedFile->getSiblingFolder(),
             'context_folder' => $presentedFile->getContextFolder(),
             'file_hash' => $presentedFile->getMd5Hash(),

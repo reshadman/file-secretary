@@ -105,4 +105,18 @@ interface PersistableFile
      * @return string
      */
     public function getCategory();
+
+    /**
+     * Get file full name which appends extension.
+     *
+     * @return string
+     */
+    public function getFileableFullFileName();
+
+    /**
+     * Get fileable unique file identifier.
+     *
+     * @return string
+     */
+    public function getFileableFileUniqueIdentifier();
 }

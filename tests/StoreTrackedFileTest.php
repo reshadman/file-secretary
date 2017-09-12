@@ -48,7 +48,7 @@ class StoreTrackedFileTest extends BaseTestCase
 
         $this->seeInDatabase('system__files', [
             'original_name' => $org,
-            'uuid' => $p->getUuid()
+            'sibling_folder' => $p->getFileUniqueIdentifier()
         ]);
 
 

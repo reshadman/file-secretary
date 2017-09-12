@@ -21,6 +21,8 @@ class EloquentPersistedFile extends Model implements PersistableFile
 
     protected $appends = ['full_url', 'image_templates'];
 
+    protected $hidden = ['generated_templates'];
+
     /**
      * EloquentPersistedFile constructor.
      * @param array $attributes
@@ -234,5 +236,29 @@ class EloquentPersistedFile extends Model implements PersistableFile
     {
         $command = app(DeleteTrackedFile::class);
         return $command->execute($this, $onDelete);
+    }
+
+    public function getTemplate($template, $full = false)
+    {
+        $templates = $this->getImageTemplates();
+
+        if ($full) {
+            return $templates['children'][$template];
+        }
+
+        $finalTemplate = $template . '.' . $templates['parent_extension'];
+
+        if (array_key_exists($finalTemplate, $templates['children'])) {
+            return $templates['children'][$finalTemplate];
+        }
+
+        foreach ($templates['children'] as $t => $address) {
+            $name = pathinfo($t, PATHINFO_FILENAME);
+            if ($name === $template) {
+                return $address;
+            }
+        }
+
+        throw new \InvalidArgumentException("Template not supported.");
     }
 }

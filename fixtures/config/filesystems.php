@@ -6,7 +6,7 @@
 
         'public' => [
             'driver' => 'local',
-            'root'   => public_path('/'),
+            'root'   =>  __DIR__ . '/../../stub/local_drivers/public',
         ],
 
         'private' => [

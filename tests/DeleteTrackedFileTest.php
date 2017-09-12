@@ -54,7 +54,7 @@ class DeleteTrackedFileTest extends BaseTestCase
         ]);
 
         $this->assertTrue($secretaryManager->getContextDriver($context)->exists(
-            $path = $response->getFileableContextFolder() . '/' . $response->getFileableSiblingFolder() . '/' . $response->getFileableFileName()
+            $path = $response->getFileableContextFolder() . '/' . $response->getFileableFullFileName()
         ));
 
         /** @var DeleteTrackedFile $deleteCommand */
@@ -66,10 +66,11 @@ class DeleteTrackedFileTest extends BaseTestCase
             'id' => $id
         ]);
 
+
         $this->assertFalse($secretaryManager->getContextDriver($context)->exists($path));
 
         // If the uuid is a true uuid for file not just for name:
-        if ($p->getUuid() === $p2->getUuid()) {
+        if ($p->getFileUniqueIdentifier() === $p2->getFileUniqueIdentifier()) {
             $response = $create();
 
             $response2 = $create();

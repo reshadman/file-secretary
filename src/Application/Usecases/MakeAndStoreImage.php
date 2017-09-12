@@ -17,8 +17,11 @@ class MakeAndStoreImage
     private $makeImage;
     private $fManager;
 
-    public function __construct(MakeImage $makeImage, StoreFile $storeFile, FileSecretaryManager $fManager)
-    {
+    public function __construct(
+        MakeImage $makeImage,
+        StoreFile $storeFile,
+        FileSecretaryManager $fManager
+    ) {
         $this->storeFile = $storeFile;
         $this->makeImage = $makeImage;
         $this->fManager = $fManager;
@@ -51,7 +54,7 @@ class MakeAndStoreImage
                 null,
                 [
                     'image_template_name' => $template . '.' . $response->extension(),
-                    'uuid' => $uuid // Causes to not to create another folder.
+                    'file_unique_identifier' => $uuid // Causes to not to create another folder.
                 ]
             ));
         } else {

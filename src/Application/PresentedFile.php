@@ -26,10 +26,10 @@ class PresentedFile
      */
     private $file;
     private $fileType;
-    private $uniqueName;
+    private $tempUniqueName;
     private $fileContents;
     private $newPath;
-    private $uuid;
+    private $fileUniqueIdentifier;
     private $payload;
     /**
      * @var null
@@ -53,8 +53,8 @@ class PresentedFile
         $this->fileType = $fileType;
         $this->payload = $payload;
         $this->originalName = $originalName;
-        $this->uniqueName = Uuid::uuid4()->toString();
-        $this->uuid = array_get($payload, 'uuid', null);
+        $this->tempUniqueName = Uuid::uuid4()->toString();
+        $this->fileUniqueIdentifier = array_get($payload, 'file_unique_identifier', null);
         $this->resolveFile();
     }
 
@@ -135,10 +135,10 @@ class PresentedFile
      */
     protected function putTemp($content, $extension = null)
     {
-        $path = sys_get_temp_dir() . '/' . $this->uniqueName;
+        $path = sys_get_temp_dir() . '/' . $this->tempUniqueName;
 
         if ($extension) {
-            $path = $this->uniqueName . '.' . $extension;
+            $path = $this->tempUniqueName . '.' . $extension;
         }
 
         $this->getNativeFilesInstance()->put($path, $content);
@@ -229,7 +229,7 @@ class PresentedFile
             return $this->newPath;
         }
 
-        $uuid = $this->getUuid();
+        $uuid = $this->getFileUniqueIdentifier();
 
         $ext = $this->getFileExtension();
 
@@ -257,17 +257,17 @@ class PresentedFile
         return $this->newPath;
     }
 
-    public function getUuid()
+    public function getFileUniqueIdentifier()
     {
-        if ($this->uuid !== null) {
-            return $this->uuid;
+        if ($this->fileUniqueIdentifier !== null) {
+            return $this->fileUniqueIdentifier;
         }
 
         $generator = $this->getSecretaryManager()->getConfig("file_name_generator");
 
-        $this->uuid = forward_static_call([$generator, 'generate'], $this);
+        $this->fileUniqueIdentifier = forward_static_call([$generator, 'generate'], $this);
 
-        return $this->uuid;
+        return $this->fileUniqueIdentifier;
     }
 
     /**
@@ -376,7 +376,7 @@ class PresentedFile
             return $this->getImageName(static::MAIN_IMAGE_NAME . $ext);
         }
 
-        return $this->getUuid() . $ext;
+        return $this->getFileUniqueIdentifier() . $ext;
     }
 
     public function getSiblingFolder()
@@ -384,7 +384,7 @@ class PresentedFile
         $contextData = $this->getSecretaryManager()->getConfig("contexts." . $this->getContext());
 
         if (static::contextCategoryIsForImages($contextData['category'])) {
-            return $this->getUuid();
+            return $this->getFileUniqueIdentifier();
         }
 
         return null;
@@ -425,8 +425,8 @@ class PresentedFile
         return array_get($contextData, 'category');
     }
 
-    public function getPayloadByKey()
+    public function getPayloadByKey($key)
     {
-        return array_get($this->getPayload(), 'client_ip');
+        return array_get($this->getPayload(), $key);
     }
 }

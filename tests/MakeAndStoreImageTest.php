@@ -56,7 +56,7 @@ class MakeAndStoreImageTest extends BaseTestCase
             PresentedFile::FILE_TYPE_PATH,
             "logo.png",
             [
-                'uuid' => $this->uuid = Uuid::uuid4()->toString()
+                'file_unique_identifier' => $this->uuid = Uuid::uuid4()->toString()
             ]
         ));
 
@@ -129,7 +129,7 @@ class MakeAndStoreImageTest extends BaseTestCase
             PresentedFile::FILE_TYPE_PATH,
             "logo.png",
             [
-                'uuid' => $this->uuid = Uuid::uuid4()->toString()
+                'file_unique_identifier' => $this->uuid = Uuid::uuid4()->toString()
             ]
         ));
 
@@ -153,7 +153,7 @@ class MakeAndStoreImageTest extends BaseTestCase
             PresentedFile::FILE_TYPE_PATH,
             "logo.png",
             [
-                'uuid' => $this->uuid = Uuid::uuid4()->toString()
+                'file_unique_identifier' => $this->uuid = Uuid::uuid4()->toString()
             ]
         ));
 
