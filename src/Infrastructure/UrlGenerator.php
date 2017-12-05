@@ -64,9 +64,10 @@ class UrlGenerator
     /**
      * @param $context
      * @param $fullRelative
+     * @param array $appending
      * @return null|string
      */
-    public static function fromContextFullRelative($context, $fullRelative)
+    public static function fromContextFullRelative($context, $fullRelative, $appending = [])
     {
         $cacheKey = 'full_relative_to_full_url__' . $context;
 
@@ -80,7 +81,15 @@ class UrlGenerator
             static::$cache[$cacheKey] = $baseAddress;
         }
 
-        return rtrim(static::$cache[$cacheKey], '/') . '/' . trim($fullRelative);
+        $url = rtrim(static::$cache[$cacheKey], '/') . '/' . trim($fullRelative);
+
+        if (empty($appending)) {
+            return $url;
+        }
+
+        $queryPart = http_build_query($appending);
+
+        return http_build_query($url, ['query' => $queryPart]);
     }
 
     /**
@@ -88,24 +97,30 @@ class UrlGenerator
      * @param $contextFolder
      * @param $afterContextPath
      * @param bool $preferBaseAddress
+     * @param array $appending
      * @return null|string
      */
-    public static function fromContextSpec($contextName, $contextFolder, $afterContextPath, $preferBaseAddress = true)
-    {
+    public static function fromContextSpec(
+        $contextName,
+        $contextFolder,
+        $afterContextPath,
+        $preferBaseAddress = true,
+        $appending = []
+    ) {
         if ($preferBaseAddress) {
             $contextBaseAddress = static::getManager()->getConfig("contexts.$contextName.driver_base_address");
 
 
             if ($contextBaseAddress) {
-                return self::fromContextFullRelative($contextName, $contextFolder . '/' . $afterContextPath);
+                return self::fromContextFullRelative($contextName, $contextFolder . '/' . $afterContextPath, $appending);
             }
         }
 
-        return route('file-secretary.get.download_file', [
+        return route('file-secretary.get.download_file', array_merge([
             'context_name' => $contextName,
             'context_folder' => $contextFolder,
             'after_context_path' => $afterContextPath
-        ]);
+        ], $appending));
     }
 
     /**
@@ -113,9 +128,10 @@ class UrlGenerator
      *
      * @param PersistableFile $persistedFile
      * @param bool $preferBase
+     * @param array $appending
      * @return array|null|string
      */
-    public static function fromEloquentInstance(PersistableFile $persistedFile, $preferBase = true)
+    public static function fromEloquentInstance(PersistableFile $persistedFile, $preferBase = true, $appending = [])
     {
         $sibling = $persistedFile->getFileableSiblingFolder();
 
@@ -129,33 +145,39 @@ class UrlGenerator
             $persistedFile->getFileableContext(),
             $persistedFile->getFileableContextFolder(),
             $path,
-            $preferBase
+            $preferBase,
+            $appending
         );
     }
 
-    public static function getImagesTemplatesForEloquentInstance(PersistableFile $persistedFile, $preferBase = true)
-    {
+    public static function getImagesTemplatesForEloquentInstance(
+        PersistableFile $persistedFile,
+        $preferBase = true,
+        $appending = []
+    ) {
         return static::getImageTemplatesFromContextSpec(
             $persistedFile->getFileableContext(),
             $persistedFile->getFileableContextFolder(),
             $persistedFile->getFileableSiblingFolder(),
             $persistedFile->getFileableFileName(),
             $persistedFile->getFileableExtension(),
-            $preferBase
+            $preferBase,
+            $appending
         );
     }
 
-    public static function fromAddressableRemoteFile(AddressableRemoteFile $remoteFile, $preferBase = true)
+    public static function fromAddressableRemoteFile(AddressableRemoteFile $remoteFile, $preferBase = true, $appending = [])
     {
         return static::fromContextSpec(
             $remoteFile->getContextName(),
             $remoteFile->getContextFolder(),
             $remoteFile->relative(),
-            $preferBase
+            $preferBase,
+            $appending
         );
     }
 
-    public static function getImageTemplatesForRemoteFile(AddressableRemoteFile $remoteFile, $preferBase = true)
+    public static function getImageTemplatesForRemoteFile(AddressableRemoteFile $remoteFile, $preferBase = true, $appending = [])
     {
         $contextData = static::getManager()->getContextData($remoteFile->getContextName());
 
@@ -175,7 +197,8 @@ class UrlGenerator
             $sibling,
             $fileName,
             $extension === '' || $extension === false ? null : $extension,
-            $preferBase
+            $preferBase,
+            $appending
         );
     }
 
@@ -185,7 +208,8 @@ class UrlGenerator
         $sibling,
         $parentFileName,
         $parentFileExtension,
-        $preferBase = true
+        $preferBase = true,
+        $appending = []
     ) {
         $contextData = static::getManager()->getContextData($contextName);
 
@@ -198,7 +222,8 @@ class UrlGenerator
             $contextName,
             $contextFolder,
             $sibling . '/' . $parentFileName . ($parentFileExtension ? '.' . $parentFileExtension : ''),
-            $preferBase
+            $preferBase,
+            $appending
         );
 
         if (array_key_exists('allowed_templates', $contextData)) {
@@ -232,7 +257,8 @@ class UrlGenerator
                     $childrenContextName,
                     $childrenContext['context_folder'],
                     $siblingFolder . '/' . $templateName . '.' . $encoding,
-                    $preferBase
+                    $preferBase,
+                    $appending
                 );
             }
 
@@ -241,7 +267,8 @@ class UrlGenerator
                     $childrenContextName,
                     $childrenContext['context_folder'],
                     $siblingFolder . '/' . $templateName . '.' . $parentFileExtension,
-                    $preferBase
+                    $preferBase,
+                    $appending
                 );
             }
         }

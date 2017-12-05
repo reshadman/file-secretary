@@ -189,21 +189,23 @@ class EloquentPersistedFile extends Model implements PersistableFile
     /**
      * Full url.
      *
+     * @param array $appending
      * @return string
      */
-    public function toUrl()
+    public function toUrl($appending = [])
     {
-        return UrlGenerator::fromEloquentInstance($this);
+        return UrlGenerator::fromEloquentInstance($this, true, $appending);
     }
 
     /**
      * Get image templates
      *
+     * @param array $appending
      * @return array|null
      */
-    public function getImageTemplates()
+    public function getImageTemplates($appending = [])
     {
-        return UrlGenerator::getImagesTemplatesForEloquentInstance($this);
+        return UrlGenerator::getImagesTemplatesForEloquentInstance($this, true, $appending);
     }
 
     /**
@@ -238,9 +240,9 @@ class EloquentPersistedFile extends Model implements PersistableFile
         return $command->execute($this, $onDelete);
     }
 
-    public function getTemplate($template, $full = false)
+    public function getTemplate($template, $full = false, $appending = [])
     {
-        $templates = $this->getImageTemplates();
+        $templates = $this->getImageTemplates($appending);
 
         if ($full) {
             return $templates['children'][$template];

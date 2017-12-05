@@ -4,6 +4,7 @@ namespace FileSecretaryTests;
 
 use Reshadman\FileSecretary\Application\PresentedFile;
 use Reshadman\FileSecretary\Application\Usecases\StoreFile;
+use Reshadman\FileSecretary\Infrastructure\UrlGenerator;
 
 class StoreFileTest extends BaseTestCase
 {
@@ -49,5 +50,7 @@ class StoreFileTest extends BaseTestCase
         $remoteMd5 = ($presented->getContextDriver()->get($addressable->fullRelative()));
 
         $this->assertEquals($remoteMd5, $md5Content);
+
+        $this->assertContains('a=c', UrlGenerator::fromAddressableRemoteFile($addressable, true, ['a' => 'c']));
     }
 }

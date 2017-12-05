@@ -6,6 +6,7 @@ use Illuminate\Support\Str;
 use Reshadman\FileSecretary\Application\PersistableFile;
 use Reshadman\FileSecretary\Application\PresentedFile;
 use Reshadman\FileSecretary\Application\Usecases\StoreTrackedFile;
+use Reshadman\FileSecretary\Infrastructure\UrlGenerator;
 
 class StoreTrackedFileTest extends BaseTestCase
 {
@@ -59,5 +60,7 @@ class StoreTrackedFileTest extends BaseTestCase
         $this->assertEquals(\DB::table('system__files')->count(), 2);
 
         $this->assertFalse($response2->getFileableIdentifier() === $response->getFileableIdentifier());
+
+        $this->assertContains('a=c', $response2->toUrl(['a' => 'c']));
     }
 }
