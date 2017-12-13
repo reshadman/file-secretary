@@ -31,7 +31,7 @@ class StoreTrackedFile
      */
     public function execute(PresentedFile $presentedFile)
     {
-        $this->storeFile->execute($presentedFile);
+        $stored = $this->storeFile->execute($presentedFile);
 
         return $this->fManager->getPersistModel()->create([
             'uuid' => Uuid::uuid4()->toString(),
@@ -43,6 +43,7 @@ class StoreTrackedFile
             'file_hash' => $presentedFile->getMd5Hash(),
             'file_extension' => $presentedFile->getFileExtension(),
             'file_ensured_hash' => $presentedFile->getSha1Hash(),
+            'file_size' => $stored->getRealFileSize(),
             'category' => $presentedFile->getCategory()
         ]);
     }

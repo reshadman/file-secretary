@@ -2,6 +2,7 @@
 
 namespace Reshadman\FileSecretary\Application;
 
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 use Reshadman\FileSecretary\Infrastructure\UrlGenerator;
 
 class AddressableRemoteFile
@@ -59,5 +60,27 @@ class AddressableRemoteFile
     public function getImageTemplates()
     {
         return UrlGenerator::getImageTemplatesForRemoteFile($this);
+    }
+
+    public function getRealFileSize()
+    {
+        /** @var FileSecretaryManager $fileSecretaryManager */
+        $fileSecretaryManager = app(FileSecretaryManager::class);
+        $driver = $fileSecretaryManager->getContextDriver($this->getContextName());
+
+        $path = $this->fullRelative();
+        $tries = 3;
+        $size = null;
+
+        while ($tries > 0 && $size === null) {
+            try {
+                $size = $driver->size($path);
+            } catch (\Exception $e) {
+                $tries--;
+                continue;
+            }
+        }
+
+        return $size;
     }
 }

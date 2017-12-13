@@ -24,7 +24,11 @@ class UseOrUnuseTrackedFile
 
         /** @var EloquentPersistedFile $file */
         if (is_string($fileUuidOrInstance)) {
-            $file = $model->whereUuid($fileUuidOrInstance)->firstOrFail();
+            $file = $model->whereUuid($fileUuidOrInstance)->first();
+
+            if ($file === null) {
+                return;
+            }
         } else {
             $file = $fileUuidOrInstance;
         }

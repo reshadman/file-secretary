@@ -119,4 +119,9 @@ interface PersistableFile
      * @return string
      */
     public function getFileableFileUniqueIdentifier();
+
+    /**
+     * @return int
+     */
+    public function getRealFileSize();
 }

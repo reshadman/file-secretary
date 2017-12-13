@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Reshadman\FileSecretary\Application\Usecases\DeleteTrackedFile;
+use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 use Reshadman\FileSecretary\Infrastructure\UrlGenerator;
 
 /**
@@ -262,5 +263,51 @@ class EloquentPersistedFile extends Model implements PersistableFile
         }
 
         throw new \InvalidArgumentException("Template not supported.");
+    }
+
+    public function getRealFileSize()
+    {
+        /** @var FileSecretaryManager $fileSecretaryManager */
+        $fileSecretaryManager = app(FileSecretaryManager::class);
+
+        $driver = $fileSecretaryManager->getContextDriver($this->getFileableContext());
+
+        $sibling = $this->getFileableSiblingFolder();
+
+        if ($sibling !== null) {
+            $path = $sibling . '/' . $this->getFileableFullFileName();
+        } else {
+            $path = $this->getFileableFullFileName();
+        }
+
+        $path = $this->getFileableContextFolder() . '/' . $path;
+
+        $tries = 3;
+        $size = null;
+
+        while ($tries > 0 && $size === null) {
+            try {
+                $size = $driver->size($path);
+            } catch (\Exception $e) {
+                $tries--;
+                continue;
+            }
+        }
+
+        return $size;
+    }
+
+    public function getFileSize()
+    {
+        return $this->file_size;
+    }
+
+    public function getFileSizeAttribute()
+    {
+        if (array_get($this->attributes, 'file_size') === null) {
+            return null;
+        }
+
+        return (int)$this->attributes['file_size'];
     }
 }
