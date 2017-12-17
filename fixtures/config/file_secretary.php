@@ -10,7 +10,7 @@
     | you can implement your own class which respects the interface.
     |
     */
-    'file_name_generator' => \Reshadman\FileSecretary\Infrastructure\Sha1FileNameGenerator::class,
+    'file_name_generator' => \Reshadman\FileSecretary\Infrastructure\MillionOptimizedFileNameGenerator::class,
 
     /*
     |--------------------------------------------------------------------------

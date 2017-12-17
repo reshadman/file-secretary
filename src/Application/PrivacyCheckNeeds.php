@@ -24,23 +24,18 @@ class PrivacyCheckNeeds
 
     private function extractArgs($relativePath)
     {
-        $extension = explode('.', $relativePath);
-
-        if (count($extension) > 1) {
-            $this->fileExtension = array_pop($extension);
-            $relativePath = implode('.', $extension);
-        }
-
         $relativePath = trim($relativePath, '/');
 
-        $exploded = explode('/', $relativePath);
+        $pathInfo = pathinfo($relativePath);
 
-        if (count($exploded) > 1) {
-            $this->fileUuid = $exploded[0];
-            $this->fileName = $exploded[1];
+        $this->fileName = $pathInfo['filename'];
+
+        $this->fileExtension = $pathInfo['extension'];
+
+        if (!in_array($pathInfo['dirname'], ['/', '.', '', DIRECTORY_SEPARATOR, '..'])) {
+            $this->fileUuid = $pathInfo['dirname'];
         } else {
-            $this->fileUuid = $exploded[0];
-            $this->fileName = $exploded[0];
+            $this->fileUuid = $this->fileName;
         }
     }
 
