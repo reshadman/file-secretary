@@ -200,10 +200,10 @@ class DynamicResizableTemplate extends AbstractDynamicTemplate implements Dynami
         }
 
         if ($quality === null) {
-            return $image->encode($wantedFormat);
+            return $image->encode($wantedFormat)->getEncoded();
         }
 
-        return $image->encode($wantedFormat, $quality);
+        return $image->encode($wantedFormat, $quality)->getEncoded();
     }
 
     /**

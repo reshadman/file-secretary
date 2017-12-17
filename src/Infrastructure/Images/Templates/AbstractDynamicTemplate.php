@@ -14,7 +14,7 @@ abstract class AbstractDynamicTemplate implements DynamicTemplateInterface
     public function finalize(Image $image, $wantedFormat)
     {
         $this->checkExtension($image, $wantedFormat);
-        return $image->isEncoded() ? $image->getEncoded() : $image->encode($wantedFormat);
+        return $image->isEncoded() ? $image->getEncoded() : $image->encode($wantedFormat)->getEncoded();
     }
 
     protected function checkExtension(Image $image, $extension)
