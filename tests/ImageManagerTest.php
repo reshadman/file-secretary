@@ -9,6 +9,7 @@ use Reshadman\FileSecretary\Application\Usecases\MakeImage;
 use Reshadman\FileSecretary\Application\Usecases\StoreFile;
 use Reshadman\FileSecretary\Infrastructure\FileSecretaryManager;
 use Reshadman\FileSecretary\Infrastructure\Images\FileSecretaryImageManager;
+use Reshadman\FileSecretary\Infrastructure\Images\TemplateNotFoundException;
 
 class ImageManagerTest extends BaseTestCase
 {
@@ -102,7 +103,7 @@ class ImageManagerTest extends BaseTestCase
 
     public function testThrowsExceptionWhenInvalidTemplateGiven()
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(TemplateNotFoundException::class);
 
         $this->make->execute($this->contents, "companies_logo_200x201", "jpg");
     }
