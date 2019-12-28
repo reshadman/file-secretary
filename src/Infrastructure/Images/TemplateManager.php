@@ -27,6 +27,7 @@ class TemplateManager
      *
      * @param $templateName
      * @return DynamicTemplateInterface|TemplateInterface
+     * @throws TemplateNotFoundException
      */
     public function getTemplateInstance($templateName)
     {
@@ -35,7 +36,7 @@ class TemplateManager
         // If template is not in out array list
         // we will throw an exception.
         if ( ! $this->templateExists($templateName)) {
-            throw new \InvalidArgumentException('No template with given name provided.');
+            throw new TemplateNotFoundException('No template with given name provided.');
         }
 
         // Check that template has args
