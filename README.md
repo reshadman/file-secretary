@@ -1,3 +1,7 @@
+# Notice Before Usage
+For new versions of Laravel use [spatie/laravel-medialibrary](https://github.com/spatie/laravel-medialibrary). The funcionality is almost the same
+except that the same files are stored multiple times. As a recommendation if you want image resizing functionality use something like [thumbor](https://github.com/thumbor/thumbor) which is more stable, secure, configurable and fast.  
+
 # Laravel File Secretary
 ![Build Status](http://img.shields.io/travis/reshadman/file-secretary/master.png?style=flat-square)
 ![Build Status](https://www.versioneye.com/user/projects/59a41045368b08003f172a41/badge.png?style=flat-square)
